@@ -1,0 +1,30 @@
+{
+  "loginPage" : {
+    "welcome": "Welcome",
+    "msgWelcome": "Enter your personal details and start journay with us",
+    "titleWelcome" : "Hello, Friend!",
+    "msgEmailEnsure": "Ensure your email for registration",
+    "ForgotPass" : "Forgot your password ?",
+    "signLogin" : "SIGN IN",
+    "signUp" : "SIGN UP",
+    "msgErrorLogin" : "User or Password incorrect or not existing"
+  },
+  "registerPage" : {
+    "welcome": "Welcome Back!",
+    "msgWelcome": "To Keep connected with us please login with your personnel info",
+    "signUp" : "SIGN UP"
+  },
+  "viewGeneral" : {
+    "btnAdd" : "new Item",
+    "numberRows" : "number of rows"
+  },
+  "formGeneral" : {
+    "required" : "is required"
+  },
+  "msgLoading" : {
+    "loginSystem" : "Access system",
+    "logoutSystem" : "Exit system"
+
+  }
+
+}
