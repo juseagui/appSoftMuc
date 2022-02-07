@@ -26,19 +26,17 @@
  
         <v-spacer></v-spacer>
 
-        <v-btn color="primary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'general'">
-          {{ $t("viewGeneral.btnAdd") }}
-        </v-btn>
 
     
       <v-card
-      v-show="source == 'detailGeneral'"
       class="mx-auto style-card-person"
-      max-width="170"
+      max-width="164"
+      max-height = "84"
       elevation="0"
       flat   
       rounded= false
-      v-for="item in headersDetail"
+      :key="index"
+      v-for="(item, index) in headersDetail"
       >
         <v-list-item  three-line>
           <v-list-item-content>
@@ -55,6 +53,9 @@
       </v-card>
 
 
+        <v-btn color="primary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'general'">
+          {{ $t("viewGeneral.btnAdd") }}
+        </v-btn>
 
 
 

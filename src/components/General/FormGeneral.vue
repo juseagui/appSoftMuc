@@ -9,7 +9,9 @@
          <v-form 
           v-model="valid"
           ref="form">
-        <v-card-text v-for="itemGroup in propsGroup" style="padding : 15px;"  >
+        <v-card-text v-for="(itemGroup, index) in propsGroup" 
+        style="padding : 15px;"
+        :key="index"  >
          <v-alert
           border="left"
           style=" margin-bottom: 0px; "
@@ -25,7 +27,8 @@
             <v-container>
                 <v-row>
                     <!-- interaccion de campos de un determinado objecto -->
-                    <v-col v-for="item in itemGroup.fields"
+                    <v-col v-for="(item, index) in itemGroup.fields"
+                        :key="index"
                         cols="12"
                         :sm="item.type == 3 ? null : item.columns == 1 ? '12' : item.columns == 2 ? '8' :'6' "
                         :md="item.type == 3 ? null : item.columns == 1 ? '12' : item.columns == 2 ? '6' :'4' ">
@@ -38,6 +41,7 @@
                           :rules="[rules.required(item.description, item.required)]"
                           :hint="item.hint == '' ? false : item.hint"
                           :value="(item.value != ''  ? item.value : null)"
+                          :name = item.name
                           required>
                         </v-text-field>
 
@@ -50,6 +54,7 @@
                           :rules ="[rules.required(item.description, item.required), rules.emailRules() ]"
                           :hint="item.hint == null ? '' : item.hint"
                           :value="(item.value != ''  ? item.value : null)"
+                          :name = item.name
                           required>
                         </v-text-field>
 
@@ -64,6 +69,7 @@
                           :rules ="[rules.required(item.description, item.required)]"
                           :hint="item.hint == '' ? false : item.hint"
                           :value="(item.value != ''  ? item.value : null)"
+                          :name = item.name
                           >
                         </v-textarea>
 
@@ -84,6 +90,7 @@
                               prepend-icon="insert_invitation"
                               :rules ="[rules.required(item.description,  item.required)] "
                               :hint="item.hint == '' ? false : item.hint"
+                              :name = item.name
                               v-bind="attrs"
                               v-on="on"
                             ></v-text-field>
@@ -103,6 +110,7 @@
                           :rules="[rules.required(item.description, item.required), rules.number()] "
                           :hint="item.hint == '' ? false : item.hint"
                           :value="(item.value != ''  ? item.value : null)"
+                          :name = item.name
                           required>
                         </v-text-field>
 
@@ -114,6 +122,7 @@
                           :rules="[rules.required(item.description, item.required)] "
                           :hint="item.hint == '' ? false : item.hint"
                           :value="(item.value != ''  ? item.value : null)"
+                          :name = item.name
                           required>
                         </v-text-field>
 
@@ -122,8 +131,8 @@
             </v-container>
           
         </v-card-text>
-        </v-form>
-        <v-divider ></v-divider>
+
+         <v-divider ></v-divider>
           <v-card-actions>
             <small>* indicates required field</small>
             <v-spacer></v-spacer>
@@ -136,10 +145,14 @@
             <v-btn
               color="primary darken-1"
               text
-              @click="close()"
+              :disabled="!valid"
+              @click="validate()"
             > Save
             </v-btn>
           </v-card-actions>
+
+        </v-form>
+       
 
       </v-card>
       <v-card>
@@ -193,6 +206,19 @@
             //Se envia el parametro a la vista por medio del emit para cerrar el modal
             Object.assign(this.$data, this.$options.data.call(this));
             this.$emit('listenerModal');    
+        },
+        //Validate fields
+        validate () {
+          debugger
+          let validForm = this.$refs.form.validate();
+
+          if(validForm){
+            this.$refs.form._data.inputs.forEach( 
+              item => { 
+                console.log(item.$attrs.name, item.value, item.valid)  
+                } )
+          }
+
         },
         async getDataForm(){
             if(this.openModal && this.dataFieldObject ){

@@ -5,7 +5,8 @@
     <v-container>
 
       <!-- Componente Toolbar para header de visualizacion de objectos -->
-      <ToolbarGeneral :titleObject="titleObject" @listenerToolbar="toggleModal" :source="source" />
+      <ToolbarGeneral :titleObject="titleObject" @listenerToolbar="toggleModal" 
+      :source="source" :headersDetail="headersDetail" class = "mb-4"/>
 
       <v-data-table
         :headers="headers"
@@ -44,20 +45,7 @@
       <div class = "mt-1">
         <v-card class="d-flex justify-space-between mb-6" style = " box-shadow: none;"  >
           <span class="pa-1"  >
-            <v-chip
-              class="ma-2"
-              color="chipColorPrimary"
-              text-color="white"
-            >
-              <v-avatar
-                left
-                color="chipColorSecundary"
-              >
-                {{dataCount}}
-              </v-avatar>
-              {{$t("viewGeneral.numberRows")}}
-            </v-chip>
-
+      
           </span>
           <span class="pa-1"  >
             <v-pagination
@@ -99,6 +87,11 @@ export default {
       //params for modal
       visibilityModal: false,
       operationModel : { action: "", pk: "" },
+
+      //params for Toolbar
+      headersDetail: [
+          { text: "Cant. registros", value: "", ico : "equalizer"}]
+
     };
   },
   async mounted() {
@@ -109,6 +102,8 @@ export default {
       debugger
       this.dataList = dataValueList.data.data;
       this.dataCount = dataValueList.data.count;
+      let nextCountRegis = dataValueList.data.data.length;
+      this.headersDetail[0].value = " 1-"+ nextCountRegis + " of " + this.dataCount;
       this.generateCounPag();
       
       //Get field for list
@@ -176,10 +171,12 @@ export default {
       }
 
       let dataValueList = await this.getDataObjectList(this.$route.params.idObject, ini,limit );
-
+      debugger
       if(dataValueList.code == 'OK'){
         this.dataList = dataValueList.data.data;
         this.dataCount = dataValueList.data.count;
+        let nextCountRegis = ini+dataValueList.data.data.length;
+        this.headersDetail[0].value = ini+1 +"-"+ nextCountRegis + " of " + this.dataCount;
         this.generateCounPag();
       }
 
@@ -188,6 +185,8 @@ export default {
     generateCounPag() {
       let intCount = Math.round(this.dataCount / this.itemsPerPage);
       this.pageCount = intCount <= 0 ? 1 : intCount;
+      
+
     }
 
   },

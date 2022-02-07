@@ -15,7 +15,7 @@
             color="grey"
             size="140"
           >
-            <v-img src="https://media-exp1.licdn.com/dms/image/C4D03AQEJCS1rboiTug/profile-displayphoto-shrink_800_800/0/1632367456836?e=1649289600&v=beta&t=kND8G24AjDF0wSR01ch9CXKonTEewh0ZoTSLQgxf2fk"></v-img>
+            <v-img src="https://avatars.githubusercontent.com/u/42414987?s=400&u=93512497d48b18e77ccb6c33ad1b22b171bf5694&v=4"></v-img>
           </v-avatar>
         </v-toolbar-title>
 
