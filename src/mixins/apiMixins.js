@@ -57,7 +57,7 @@ export const apiMixins = {
                     break;
             }
 
-            await this.axios.get("/objects/getFieldObject/" + idObject + params)
+            await this.axios.get("/objects/FieldObject/" + idObject + params)
             .then((response) => {
                 responseApi.data = response.data;
                 responseApi.code = 'OK';

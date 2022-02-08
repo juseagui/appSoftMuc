@@ -40,8 +40,8 @@
                           :counter= item.number_charac 
                           :rules="[rules.required(item.description, item.required)]"
                           :hint="item.hint == '' ? false : item.hint"
-                          :value="(item.value != ''  ? item.value : null)"
                           :name = item.name
+                          v-model ="item.value"
                           required>
                         </v-text-field>
 
@@ -53,8 +53,8 @@
                           :counter= item.number_charac 
                           :rules ="[rules.required(item.description, item.required), rules.emailRules() ]"
                           :hint="item.hint == null ? '' : item.hint"
-                          :value="(item.value != ''  ? item.value : null)"
                           :name = item.name
+                          v-model ="item.value"
                           required>
                         </v-text-field>
 
@@ -68,8 +68,8 @@
                           :label="item.description+ (item.required == 1  ?' *' : '')"
                           :rules ="[rules.required(item.description, item.required)]"
                           :hint="item.hint == '' ? false : item.hint"
-                          :value="(item.value != ''  ? item.value : null)"
                           :name = item.name
+                          v-model ="item.value"
                           >
                         </v-textarea>
 
@@ -109,8 +109,8 @@
                           type="number"
                           :rules="[rules.required(item.description, item.required), rules.number()] "
                           :hint="item.hint == '' ? false : item.hint"
-                          :value="(item.value != ''  ? item.value : null)"
                           :name = item.name
+                          v-model ="item.value"
                           required>
                         </v-text-field>
 
@@ -121,8 +121,8 @@
                           counter= item.number_charac
                           :rules="[rules.required(item.description, item.required)] "
                           :hint="item.hint == '' ? false : item.hint"
-                          :value="(item.value != ''  ? item.value : null)"
                           :name = item.name
+                          v-model ="item.value"
                           required>
                         </v-text-field>
 
@@ -194,6 +194,9 @@
         }
       },
 
+      //Vars for capture data form
+      fieldsData : [],
+
     }),
     async beforeUpdate() {
          if( this.open == 0 && this.dataFieldObject && this.openModal ){
@@ -211,12 +214,20 @@
         validate () {
           debugger
           let validForm = this.$refs.form.validate();
+          let fieldsDataPost = [];
 
           if(validForm){
-            this.$refs.form._data.inputs.forEach( 
-              item => { 
-                console.log(item.$attrs.name, item.value, item.valid)  
-                } )
+            let propsFieldGroup = this.propsGroup;
+            propsFieldGroup.forEach( group => { 
+              group.fields.forEach( field => {
+                fieldsDataPost.push({
+                  value : field.value,
+                  type : field.type,
+                  name : field.name
+                })
+              }) 
+              })
+            console.log(fieldsDataPost);
           }
 
         },
