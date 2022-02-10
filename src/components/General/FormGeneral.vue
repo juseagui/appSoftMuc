@@ -214,20 +214,19 @@
         validate () {
           debugger
           let validForm = this.$refs.form.validate();
-          let fieldsDataPost = [];
+          let fieldsDataPost = {};
 
           if(validForm){
             let propsFieldGroup = this.propsGroup;
             propsFieldGroup.forEach( group => { 
               group.fields.forEach( field => {
-                fieldsDataPost.push({
-                  value : field.value,
-                  type : field.type,
-                  name : field.name
-                })
+                fieldsDataPost[field.name] = field.value
               }) 
               })
-            console.log(fieldsDataPost);
+            
+            //send data capture in the form - api
+            this.postDataObject(this.$route.params.idObject, fieldsDataPost );
+
           }
 
         },

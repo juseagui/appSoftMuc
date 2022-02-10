@@ -171,7 +171,7 @@ export default {
       }
 
       let dataValueList = await this.getDataObjectList(this.$route.params.idObject, ini,limit );
-      debugger
+      
       if(dataValueList.code == 'OK'){
         this.dataList = dataValueList.data.data;
         this.dataCount = dataValueList.data.count;

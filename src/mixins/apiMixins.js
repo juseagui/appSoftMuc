@@ -94,6 +94,13 @@ export const apiMixins = {
             
             return responseApi;    
             
+        },
+
+
+        async postDataObject(idObject, data){
+            console.log(idObject,data);
+
+            //await this.axios.post()
         }
 
     }
