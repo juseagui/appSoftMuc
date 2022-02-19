@@ -177,7 +177,6 @@ import i18n from '../i18n';
         await new Promise(resolve => setTimeout(resolve, 1000))
         await this.axios.post('/login/', payload )
         .then( response =>{
-          console.log(response.data.token);
           localStorage.setItem('token', response.data.token );
           localStorage.setItem('refresh_token', response.data.refresh_token );
           localStorage.setItem('username', response.data.user.username );

@@ -5,8 +5,9 @@
     <v-container>
 
       <!-- Componente Toolbar para header de visualizacion de objectos -->
-      <ToolbarGeneral :titleObject="titleObject" @listenerToolbar="toggleModal" 
-      :source="source" :headersDetail="headersDetail" class = "mb-4"/>
+      <ToolbarGeneral :titleObject="titleObject" :source="source" :headersDetail="headersDetail"
+       @listenerToolbar="toggleModal" 
+       class = "mb-4"/>
 
       <v-data-table
         :headers="headers"
@@ -58,7 +59,8 @@
       </div>
 
       <!-- Componente modal para creación y edicion de registros -->
-      <FormGeneral :openModal="visibilityModal" @listenerModal="toggleModal" :operationModel="operationModel" />
+      <FormGeneral :openModal="visibilityModal"  :operationModel="operationModel" 
+      @listenerModal="toggleModal"/>
     </v-container>
   </v-app>
 </template>
@@ -137,6 +139,7 @@ export default {
   methods: {
     //Event listener data-table CRUD
     editItem(item) {
+      debugger
       this.toggleModal('edit',item.pk );
     },
 
@@ -149,17 +152,19 @@ export default {
     },
 
     //Activate Modal the creation new item
-    toggleModal(action = "",pk="") {
-    
+    toggleModal(action = "",pk="", save = false) {
       //Defined parms for model
       this.operationModel.action = action;
       this.operationModel.pk = pk;
       this.visibilityModal = !this.visibilityModal;
+
+      if(save)
+        this.next(this.page);
+
     },
 
     //Event listener pagination
     async next(page) {
-    
       let ini = 0;
       let limit = 0;
 
@@ -173,6 +178,7 @@ export default {
       let dataValueList = await this.getDataObjectList(this.$route.params.idObject, ini,limit );
       
       if(dataValueList.code == 'OK'){
+        this.page = page
         this.dataList = dataValueList.data.data;
         this.dataCount = dataValueList.data.count;
         let nextCountRegis = ini+dataValueList.data.data.length;
@@ -183,10 +189,8 @@ export default {
     },
 
     generateCounPag() {
-      let intCount = Math.round(this.dataCount / this.itemsPerPage);
+      let intCount = Math.ceil(this.dataCount / this.itemsPerPage);
       this.pageCount = intCount <= 0 ? 1 : intCount;
-      
-
     }
 
   },

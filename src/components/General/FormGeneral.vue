@@ -11,7 +11,7 @@
           ref="form">
         <v-card-text v-for="(itemGroup, index) in propsGroup" 
         style="padding : 15px;"
-        :key="index"  >
+        :key="index"   >
          <v-alert
           border="left"
           style=" margin-bottom: 0px; "
@@ -27,7 +27,7 @@
             <v-container>
                 <v-row>
                     <!-- interaccion de campos de un determinado objecto -->
-                    <v-col v-for="(item, index) in itemGroup.fields"
+                    <v-col v-for="(item, index) in itemGroup.fields "
                         :key="index"
                         cols="12"
                         :sm="item.type == 3 ? null : item.columns == 1 ? '12' : item.columns == 2 ? '8' :'6' "
@@ -38,7 +38,7 @@
                           v-if = "item.type == '1'"
                           :label="item.description+ (item.required == 1  ?' *' : '')"
                           :counter= item.number_charac 
-                          :rules="[rules.required(item.description, item.required)]"
+                          :rules="[rules.required(item.description, item.required), rules.validateMax(item.number_charac )]"
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
                           v-model ="item.value"
@@ -51,11 +51,12 @@
                           prepend-icon="email"
                           :label="item.description+ (item.required == 1  ?' *' : '')"
                           :counter= item.number_charac 
-                          :rules ="[rules.required(item.description, item.required), rules.emailRules() ]"
+                          :rules ="[rules.required(item.description, item.required), rules.emailRules(),
+                                    rules.validateMax(item.number_charac)]"
+
                           :hint="item.hint == null ? '' : item.hint"
                           :name = item.name
-                          v-model ="item.value"
-                          required>
+                          v-model ="item.value">
                         </v-text-field>
 
                         <!-- Validate if Type 3 -- text Area -->
@@ -66,7 +67,7 @@
                           :counter= item.number_charac
                           rows="2"
                           :label="item.description+ (item.required == 1  ?' *' : '')"
-                          :rules ="[rules.required(item.description, item.required)]"
+                          :rules ="[rules.required(item.description, item.required),rules.validateMax(item.number_charac)]"
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
                           v-model ="item.value"
@@ -85,7 +86,7 @@
                         >
                           <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                              v-model="date"
+                              v-model="item.value"
                               :label="item.description+ (item.required == 1  ?' *' : '')"
                               prepend-icon="insert_invitation"
                               :rules ="[rules.required(item.description,  item.required)] "
@@ -96,7 +97,7 @@
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                            v-model="date"
+                            v-model="item.value"
                             @input="menu2 = false"
                           ></v-date-picker>
                         </v-menu>
@@ -107,11 +108,10 @@
                           :label="item.description+ (item.required == 1  ?' *' : '')"
                           :counter= item.number_charac
                           type="number"
-                          :rules="[rules.required(item.description, item.required), rules.number()] "
+                          :rules="[rules.required(item.description, item.required), rules.number(), rules.validateMax(item.number_charac)] "
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
-                          v-model ="item.value"
-                          required>
+                          v-model ="item.value">
                         </v-text-field>
 
                         <!-- Validate if Type 6 -- Decimal -->
@@ -119,20 +119,32 @@
                           v-else-if = "item.type == '6'"
                           :label="item.description+ (item.required == 1  ?' *' : '')"
                           counter= item.number_charac
-                          :rules="[rules.required(item.description, item.required)] "
+                          :rules="[rules.required(item.description, item.required), rules.validateMax(item.number_charac)] "
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
-                          v-model ="item.value"
-                          required>
+                          v-model ="item.value">
                         </v-text-field>
+
+
+                        <!-- Validate if Type 7 -- list -->
+                         <v-select
+                          v-else-if = "item.type == '7'"
+                          :label="item.description+ (item.required == 1  ?' *' : '')"
+                          :rules ="[rules.required(item.description,  item.required)] "
+                          v-model ="item.value"
+                          :hint="item.hint == '' ? false : item.hint"
+                          :items="itemsList"
+                          item-text="state"
+                          item-value="abbr"
+                          return-object
+                        ></v-select>
 
                     </v-col>
                 </v-row>
             </v-container>
-          
         </v-card-text>
 
-         <v-divider ></v-divider>
+        <v-divider ></v-divider>
           <v-card-actions>
             <small>* indicates required field</small>
             <v-spacer></v-spacer>
@@ -150,10 +162,7 @@
             > Save
             </v-btn>
           </v-card-actions>
-
         </v-form>
-       
-
       </v-card>
       <v-card>
       </v-card>
@@ -164,6 +173,7 @@
 <script>
   //import mixins
   import {apiMixins} from '@/mixins/apiMixins.js'
+  import {mapMutations} from "vuex";
 
   export default {
     //Creacion de propiedad para manipular la visibilidad del modal
@@ -174,8 +184,8 @@
       dataFieldObject: [],
       open : 0,
       valid : false,
+      pk : null,
       //Data for Datapicker
-      date: null,
       menu2: false,
       
       //rules in the fields
@@ -191,31 +201,45 @@
         },
         number(){
           return v => !Number.isInteger(v) || 'Only number'
+        },
+        validateMax(max){
+          return v => (v || '').length <= max || `A maximum of ${max} characters is allowed`
         }
+
       },
 
       //Vars for capture data form
       fieldsData : [],
+      operationLocal : [],
+
+      itemsList: [
+          { state: 'Florida', abbr: 'FL' },
+          { state: 'Georgia', abbr: 'GA' },
+          { state: 'Nebraska', abbr: 'NE' },
+          { state: 'California', abbr: 'CA' },
+          { state: 'New York', abbr: 'NY' },
+        ]
 
     }),
     async beforeUpdate() {
          if( this.open == 0 && this.dataFieldObject && this.openModal ){
             await this.getDataForm();
             this.structureDataField();
+            this.operationLocal = this.operationModel
          }
     },
     methods: {
-        close(){
+         ...mapMutations(['mostrarLoading','ocultarLoading',]),
+        close(save=false){
             //Se envia el parametro a la vista por medio del emit para cerrar el modal
             Object.assign(this.$data, this.$options.data.call(this));
-            this.$emit('listenerModal');    
+            this.$emit('listenerModal', null, null, save );    
         },
-        //Validate fields
-        validate () {
-          debugger
+        //Validate fields and request post
+        async validate (){
+          
           let validForm = this.$refs.form.validate();
           let fieldsDataPost = {};
-
           if(validForm){
             let propsFieldGroup = this.propsGroup;
             propsFieldGroup.forEach( group => { 
@@ -224,8 +248,20 @@
               }) 
               })
             
+            let responsePost = [];
+            this.mostrarLoading({ titulo : 'PRUEBA'});
+            await new Promise(resolve => setTimeout(resolve, 1000))
+
             //send data capture in the form - api
-            this.postDataObject(this.$route.params.idObject, fieldsDataPost );
+            if(this.operationLocal.action == "add")
+              responsePost = await this.postDataObject(this.$route.params.idObject, fieldsDataPost );
+            else
+              responsePost = await this.patchDataObject(this.$route.params.idObject, fieldsDataPost, this.operationLocal.pk  );
+
+            if( responsePost.code == 'OK' ){
+              this.close(true);
+            }
+            this.ocultarLoading()
 
           }
 
@@ -235,7 +271,7 @@
                 
                 //validate action Add or Edit
                 if(this.operationModel.action == "edit" && this.operationModel.pk != "" ){
-                  
+                  this.pk =  this.operationModel.pk;
                   let dataPropListValues = await this.getpropertyFieldValuesObject(this.$route.params.idObject, this.operationModel.pk );
 
                   if(dataPropListValues.code == 'OK'){
@@ -263,7 +299,7 @@
                 let arrayGroup = [];
                 let countData = this.dataFieldObject.length;
                 let countInt = 0;
-                let prueba=[];
+                
 
                 this.dataFieldObject.forEach(ele => {                 
                   let register = false;
@@ -272,7 +308,6 @@
                       arrayGroup = groupId;
                       arrayGroup['fields']= arrayTemp;
                       this.propsGroup.push( arrayGroup );
-                      prueba = this.propsGroup;
                       arrayTemp = [];
                       arrayGroup=[];
                       register = true;
@@ -286,7 +321,6 @@
                       arrayGroup = groupId;
                       arrayGroup['fields']= arrayTemp;
                       this.propsGroup.push( arrayGroup );
-                      prueba = this.propsGroup;
                   }
                 });
 

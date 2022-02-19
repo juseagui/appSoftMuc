@@ -52,12 +52,9 @@
         
       </v-card>
 
-
         <v-btn color="primary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'general'">
           {{ $t("viewGeneral.btnAdd") }}
         </v-btn>
-
-
 
       </v-toolbar>
 </template>
@@ -67,25 +64,26 @@
 
 export default {
  name: "toolbarGeneral",
+ props: ['titleObject','codeTitle','source','headersDetail'],
  data() {
    return {
      param : ""
    }
  },
- props: ['titleObject','codeTitle','source','headersDetail'],
  methods: {
     toggleModalViewAdd() {
       Object.assign(this.$data, this.$options.data.call(this));
-      this.$emit('listenerToolbar', 'add'); 
+      this.$emit('listenerToolbar', 'add', null, false); 
     },
     toggleModalViewEdit() {
-      console.log('editar1');
       Object.assign(this.$data, this.$options.data.call(this));
-      this.$emit('listenerToolbar', 'edit', this.codeTitle); 
+      this.$emit('listenerToolbar', 'edit', this.codeTitle, false); 
     }
  }
 }
 </script>
+
+
 <style scoped>
 
     .toolbar-margin-person {
@@ -98,7 +96,6 @@ export default {
       font-weight: 500;
       font-family: "Roboto", sans-serif !important;
       text-transform: uppercase !important;
-      /*text-align: center;*/
     }
 
     .style-card-person:after{

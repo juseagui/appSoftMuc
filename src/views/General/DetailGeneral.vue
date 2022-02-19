@@ -4,8 +4,12 @@
     <Navbar />
     <v-container>
          <!-- Componente Toolbar para header de visualizacion de objectos -->
-        <ToolbarGeneral :titleObject="titleObject" @listenerToolbar="toggleModal" :codeTitle="codeTitle" :source="source" 
-        :headersDetail="headersDetail"  />  
+        <ToolbarGeneral 
+          :titleObject="titleObject" 
+          :codeTitle="codeTitle" 
+          :source="source" 
+          :headersDetail="headersDetail"
+          @listenerToolbar="toggleModal"  />  
 
         <v-card >
         <v-card-text v-for="itemGroup in propsGroup" style="padding : 15px;"  >
@@ -127,12 +131,12 @@
                     </v-col>
                 </v-row>
             </v-container>
-        
           </v-card-text>
       </v-card>
 
       <!-- Componente modal para creación y edicion de registros -->
-      <FormGeneral :openModal="visibilityModal" @listenerModal="toggleModal" :operationModel="operationModel" />
+      <FormGeneral :openModal="visibilityModal" :operationModel="operationModel"
+        @listenerModal="toggleModal" />
 
     </v-container>
 </v-app>
@@ -154,10 +158,6 @@ export default {
           titleObject : "",
           valid : true,
           codeTitle : "",
-          headersDetail: [
-          { text: "Fecha de Creación", value: "", ico : "event_available"},
-          {text: "Fecha de Modificación", value: "", ico : "restore"},
-          {text: "creador", value: "", ico : "person"}],
           source : "detailGeneral",
           //Data object field -> value
           dataDetail : [],
@@ -166,6 +166,11 @@ export default {
           //params for modal
           visibilityModal: false,
           operationModel : { action: "", pk: "" },
+          headersDetail: [
+            { text: "Fecha de Creación", value: "", ico : "event_available"},
+            {text: "Fecha de Modificación", value: "", ico : "restore"},
+            {text: "creador", value: "", ico : "person"}
+          ],
 
       }
   }, 
@@ -184,7 +189,6 @@ export default {
             let dataPropListValues = await this.getpropertyFieldValuesObject(this.$route.params.idObject,this.$route.params.idDetail );
 
             if(dataPropListValues.code == 'OK'){
-              debugger
               this.dataDetail = dataPropListValues.data.data;
               this.titleObject = this.dataDetail[0]['representation'];
               this.codeTitle = this.$route.params.idDetail;
@@ -242,11 +246,17 @@ export default {
     },
 
     //Activate Modal the creation new item
-    toggleModal(action = "",pk="") {
+    async toggleModal(action = "",pk="", save = false) {
       //Defined parms for model
       this.operationModel.action = action;
       this.operationModel.pk = pk;
       this.visibilityModal = !this.visibilityModal;
+
+      if(save){
+        await this.getDetailItem();
+        this.structureDataField();
+      }  
+
     }
 
   },
@@ -267,7 +277,6 @@ export default {
 
 
 </style>
-
 
 <style >
 

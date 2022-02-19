@@ -98,9 +98,41 @@ export const apiMixins = {
 
 
         async postDataObject(idObject, data){
-            console.log(idObject,data);
+            
+            let responseApi = [];
 
-            //await this.axios.post()
+            await this.axios.post('objects/FieldObject/?object='+idObject, data )
+            .then( response =>{
+                responseApi.data = [];
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch(error=>{
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+            })
+            
+            return responseApi;
+        },
+
+        async patchDataObject(idObject, data, pk){
+            
+            let responseApi = [];
+
+            await this.axios.patch('objects/FieldObject/'+pk+'/?object='+idObject, data )
+            .then( response =>{
+                responseApi.data = [];
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch(error=>{
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+            })
+            
+            return responseApi;
         }
 
     }
