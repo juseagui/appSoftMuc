@@ -143,6 +143,7 @@
 import axios from "axios";
 import {mapMutations} from "vuex";
 import i18n from '../i18n';
+import {apiMixins} from '@/mixins/apiMixins.js'
  
   export default {
   data: () => ({
@@ -167,46 +168,39 @@ import i18n from '../i18n';
         this.$refs.form.validate()
       },
     async login(){
+        
         var payload = {
           username: this.username,
           password: this.password
         };
+
         this.msgLoading = i18n.t('msgLoading.loginSystem');
         this.mostrarLoading({ titulo : this.msgLoading  });
         this.loading = true;
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        await this.axios.post('/login/', payload )
-        .then( response =>{
-          localStorage.setItem('token', response.data.token );
-          localStorage.setItem('refresh_token', response.data.refresh_token );
-          localStorage.setItem('username', response.data.user.username );
-          localStorage.setItem('last_name', response.data.user.last_name );
-          localStorage.setItem('email', response.data.user.email );
-          localStorage.setItem('id', response.data.user.id );
+        
+        let response = await this.AuthenticateUser(payload);
+        if(response.code == 'OK'){
           axios.defaults.headers.common['Authorization'] = 'Bearer '+response.data.token;
           this.$store.dispatch("login", response.data.user.username );
+
+          //get property permissons objects
+          let responseObjects = await this.getObjectsPermissions();
+          
+          if(responseObjects.code == 'OK'){
+              //set objects permision store in vuex
+              this.$store.dispatch("getObjectsPermissions", responseObjects.data.data );
+          }
+
           this.loading = false;
           this.$router.push('/home');
-          
-        })
-        .catch(error=>{
-          var data = error.response;
-          debugger
-          //Valid response login backend
-          if( error.response?.data?.error == "LOGIN_ERROR" ){
-            this.showAlertLogin = true;
-            this.finallyMsgError();
-            
-          }else{
-            this.showAlertLogin = true;
-            this.finallyMsgError();
-            console.log('Error general');
-          }
-          console.log(data);
-        })
-        .finally(
-           this.ocultarLoading()
-        )
+        }else{
+          this.showAlertLogin = true;
+          this.finallyMsgError();
+          console.log('Error general');
+        }
+
+        //Finish
+        this.ocultarLoading();
 
     },
     finallyMsgError(){
@@ -216,7 +210,8 @@ import i18n from '../i18n';
             },4000)
     }
 
-  }
+  },
+  mixins: [apiMixins]
 };
 </script>
 

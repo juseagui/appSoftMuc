@@ -110,14 +110,15 @@ export default {
       
       //Get field for list
       let dataPropertyList = await this.getpropertyFieldObject(this.$route.params.idObject, 'visible' );
-      
+      debugger
+
       if(dataPropertyList.code == 'OK'){
-        this.titleObject = dataPropertyList.data[0].object_field.name;
+        this.titleObject = dataPropertyList.data.data[0].object_field.name;
 
         var arrTempHeader = [];
         var jsonDataHeader = {};
 
-        dataPropertyList.data.forEach((element) => {
+        dataPropertyList.data.data.forEach((element) => {
           jsonDataHeader = {
             text: element.description,
             value: element.name,
@@ -139,7 +140,6 @@ export default {
   methods: {
     //Event listener data-table CRUD
     editItem(item) {
-      debugger
       this.toggleModal('edit',item.pk );
     },
 

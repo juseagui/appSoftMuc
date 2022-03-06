@@ -12,7 +12,8 @@ export default new Vuex.Store({
     dataLoginUser : {
       username: null,
       auth: false
-    }
+    },
+    objectsPermissions : []
   },
   mutations: {
     mostrarLoading(state, payload){
@@ -29,6 +30,9 @@ export default new Vuex.Store({
     logout(state) {
       state.dataLoginUser.auth = false;
       state.dataLoginUser.username = null;
+    },
+    getObjectsPermissions(state, objectPropertys ){
+      state.objectsPermissions = objectPropertys;
     }
   },
   actions: {
@@ -37,6 +41,9 @@ export default new Vuex.Store({
     },
     logout({ commit }){
       commit("logout");
+    },
+    getObjectsPermissions({ commit },objectPropertys ){
+      commit("getObjectsPermissions", objectPropertys);
     }
   },
   modules: {

@@ -33,7 +33,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Home.vue')
   },
   {
-    path: '/user/',
+    path: '/user/:idObject/userDetail/:idDetail',
     name: 'User',
     meta: {
       requiresAuth: true
@@ -54,6 +54,14 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/General/DetailGeneral.vue')
   },
+  {
+    path: '/system',
+    name: 'SystemGeneral',
+    meta: {
+      requiresAuth: true
+    },
+    component: () => import(/* webpackChunkName: "about" */ '../views/General/SystemGeneral.vue')
+  }
 ]
 
 const router = new VueRouter({

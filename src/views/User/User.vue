@@ -3,7 +3,6 @@
   <Navbar />
   <v-container>
      <v-toolbar
-      
       class="toolbar-margin-person"
       elevation="1"
       color = "headerTable"
@@ -26,12 +25,12 @@
           <v-toolbar-title>
             <v-row    no-gutters>
               <v-icon x-large  class="mr-1">perm_identity</v-icon>
-             <h1>Sergio Aguilera</h1>
+             <h1>{{lastNameUser}}</h1>
             </v-row>
           </v-toolbar-title>
           <v-row    no-gutters>
              <v-icon class="mr-2 ml-1">email</v-icon>
-            <h3>sergio_1396@hotmail.com</h3>
+            <h3>{{emailUser}}</h3>
           </v-row>
           <v-row  class="mt-2"   no-gutters>
             <v-icon class="mr-2 ml-1" >work</v-icon>
@@ -70,7 +69,18 @@
         transition= false
       >
         <v-card flat>
-          <HelloWorld />
+          <ToolbarGeneral 
+          :titleObject="titleObject" 
+          :codeTitle="codeTitle" 
+          :source="source" 
+          :headersDetail="headersDetail"
+          @listenerToolbar="toggleModal"  />
+
+          <TableDetail :dataField="propsGroup"  />
+
+          <!-- Componente modal para creación y edicion de registros -->
+          <FormGeneral :openModal="visibilityModal" :operationModel="operationModel"
+          @listenerModal="toggleModal" /> 
         </v-card>
       </v-tab-item>
       <v-tab-item
@@ -87,7 +97,7 @@
       >
       
         <v-card flat>
-           <CalendarUser />
+          
         </v-card>
       </v-tab-item>
       </v-tabs-items >
@@ -103,23 +113,86 @@ import Navbar from "@/components/General/Navbar";
 import TabsUser from "@/components/User/TabsUser";
 import HelloWorld from "@/components/HelloWorld";
 import CalendarUser from "@/components/User/CalendarUser";
+import ToolbarGeneral from "@/components/General/ToolbarGeneral";
+import FormGeneral from "@/components/General/FormGeneral";
+import TableDetail from "@/components/General/TableDetail";
+
+//import mixins
+import {apiMixins} from '@/mixins/apiMixins.js'
+import {processData} from '@/mixins/processData.js'
 
 export default {
- name: "user",
- data() {
-   return {
-     count : 0,
-     tabUser : null,
-     
-   }
- },
+  name: "user",
+  data() {
+    return {
+      count : 0,
+      tabUser : null,
+      codeTitle : "",
+      titleObject : "",
+      source : "detailGeneral",
+      
+      //Data object field -> value
+      dataDetail : [],
+      propsGroup : [],
 
-components: {
-  Navbar,
-  TabsUser,
-  HelloWorld,
-  CalendarUser,
-}
+      //params for modal
+      visibilityModal: false,
+      operationModel : { action: "", pk: "" },
+      headersDetail: [
+        {text: "Fecha de Creación", value: "", ico : "event_available"},
+        {text: "Fecha de Modificación", value: "", ico : "restore"},
+        {text: "creador", value: "", ico : "person"}
+      ],
+
+      //data component
+      emailUser : "",
+      lastNameUser : "",
+      
+    }
+  },
+  async mounted(){
+    this.lastNameUser = localStorage.getItem('last_name');
+    this.emailUser = localStorage.getItem('email');
+    await this.getDetailItem();
+    this.propsGroup = this.structureDataField(this.dataDetail);
+  },
+
+  components: {
+    Navbar,
+    TabsUser,
+    HelloWorld,
+    CalendarUser,
+    ToolbarGeneral,
+    FormGeneral,
+    TableDetail
+  },
+
+  methods : {
+    async getDetailItem(){
+
+          let dataPropListValues = await this.getpropertyFieldValuesObject( this.$route.params.idObject, this.$route.params.idDetail );
+
+          if(dataPropListValues.code == 'OK'){
+            this.dataDetail = dataPropListValues.data.data;
+            this.codeTitle = this.$route.params.idDetail;
+
+            //set values for component ToolbarGeneral
+            this.headersDetail[0].value = dataPropListValues.data['created_date'];
+            this.headersDetail[1].value = dataPropListValues.data['modified_date'];
+            this.headersDetail[2].value = "sergio Aguilera";
+
+          }
+      },
+
+      async toggleModal(action = "edit",pk=this.codeTitle, save = false) {
+        this.operationModel.action = action;
+        this.operationModel.pk = pk;
+        this.visibilityModal = !this.visibilityModal;
+      }
+
+  },
+
+  mixins: [apiMixins, processData]
 }
 
 </script>

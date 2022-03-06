@@ -11,7 +11,7 @@
             <v-list  >
 
                 <v-list-item link class="px-2"
-                to ="/user"  >
+                :to =" '/user/'+objeUser+'/userDetail/'+idUser"  >
                     <v-list-item-avatar>
                         <v-img src="https://media-exp1.licdn.com/dms/image/C4D03AQEJCS1rboiTug/profile-displayphoto-shrink_800_800/0/1632367456836?e=1649289600&v=beta&t=kND8G24AjDF0wSR01ch9CXKonTEewh0ZoTSLQgxf2fk"></v-img>
                     </v-list-item-avatar>
@@ -44,6 +44,19 @@
 
             
             <template v-slot:append>
+
+              <v-divider></v-divider>
+              <div  class="pa-2">
+                    <v-btn class="primary--text" color = "white" to ="/system"   v-if="!mini" block>
+                        <v-icon >settings</v-icon>
+                        System
+                    </v-btn>
+                    <v-btn color = "white"  to ="/system"  class="primary--text pa-0"   ico v-else block small>
+                        <v-icon >settings</v-icon>
+                    </v-btn>
+                </div>
+              
+              <v-divider></v-divider>
                 <div  class="pa-2">
                     <v-btn class="primary--text" color = "white" @click = "logout" :loading="loading"  v-if="!mini" block>
                         Logout
@@ -76,19 +89,32 @@ export default {
       mini: true,
       links :[],
 
+      //id user
+      idUser : "",
+      objeUser : "",
+
       //Data for view loading btn logout
       loading: false,
       msgLoading : "",
 
     }),
-  async mounted(){
-      //Get objects Navbar
-      let dataObjects = await this.getObjects();
+  mounted(){
 
-      if(dataObjects.code == 'OK'){
-        this.links = dataObjects.data;
-      }
-      
+    this.idUser = localStorage.getItem('id');
+    this.objeUser = "1";
+
+    //Get objects Navbar
+    //let dataObjects = await this.getObjects();
+
+    let permisions = this.$store.state.objectsPermissions;
+    
+    permisions.forEach(ele => {
+      ele.category_object.forEach(obj => {
+        if(obj.visible == 1)
+          this.links.push(obj)
+      })
+
+    });
   },
   computed : {
       username(){
@@ -117,6 +143,7 @@ export default {
           localStorage.removeItem('last_name' );
           localStorage.removeItem('email' );
           this.$store.dispatch("logout" );
+          this.$store.dispatch("getObjectsPermissions", [] );
           this.loading = false;
           this.$router.push('/');
         })
@@ -129,7 +156,8 @@ export default {
           this.ocultarLoading()
         )
 
-    }
+    },
+
   },
   mixins: [apiMixins]
 }

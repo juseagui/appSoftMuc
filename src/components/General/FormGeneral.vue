@@ -41,7 +41,7 @@
                           :rules="[rules.required(item.description, item.required), rules.validateMax(item.number_charac )]"
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
-                          v-model ="item.value"
+                          v-model="item.value"
                           required>
                         </v-text-field>
 
@@ -53,10 +53,10 @@
                           :counter= item.number_charac 
                           :rules ="[rules.required(item.description, item.required), rules.emailRules(),
                                     rules.validateMax(item.number_charac)]"
-
                           :hint="item.hint == null ? '' : item.hint"
                           :name = item.name
-                          v-model ="item.value">
+                          v-model="item.value"
+                          required>
                         </v-text-field>
 
                         <!-- Validate if Type 3 -- text Area -->
@@ -70,7 +70,7 @@
                           :rules ="[rules.required(item.description, item.required),rules.validateMax(item.number_charac)]"
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
-                          v-model ="item.value"
+                          v-model="item.value"
                           >
                         </v-textarea>
 
@@ -97,7 +97,7 @@
                             ></v-text-field>
                           </template>
                           <v-date-picker
-                            v-model="item.value"
+                            v-model ="item.value"
                             @input="menu2 = false"
                           ></v-date-picker>
                         </v-menu>
@@ -111,7 +111,7 @@
                           :rules="[rules.required(item.description, item.required), rules.number(), rules.validateMax(item.number_charac)] "
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
-                          v-model ="item.value">
+                          v-model="item.value">
                         </v-text-field>
 
                         <!-- Validate if Type 6 -- Decimal -->
@@ -122,7 +122,7 @@
                           :rules="[rules.required(item.description, item.required), rules.validateMax(item.number_charac)] "
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
-                          v-model ="item.value">
+                          v-model="item.value">
                         </v-text-field>
 
 
@@ -131,11 +131,11 @@
                           v-else-if = "item.type == '7'"
                           :label="item.description+ (item.required == 1  ?' *' : '')"
                           :rules ="[rules.required(item.description,  item.required)] "
-                          v-model ="item.value"
+                          v-model=item.value
                           :hint="item.hint == '' ? false : item.hint"
-                          :items="itemsList"
-                          item-text="state"
-                          item-value="abbr"
+                          :items="item.object_list.ListValues"
+                          item-text="description"
+                          item-value="code"
                           return-object
                         ></v-select>
 
@@ -171,10 +171,13 @@
 </template>
 
 <script>
+  
+  import {mapMutations} from "vuex";
+  
   //import mixins
   import {apiMixins} from '@/mixins/apiMixins.js'
-  import {mapMutations} from "vuex";
-
+  import {processData} from '@/mixins/processData.js'
+  
   export default {
     //Creacion de propiedad para manipular la visibilidad del modal
     props: ['openModal','operationModel'],
@@ -200,7 +203,7 @@
            return true
         },
         number(){
-          return v => !Number.isInteger(v) || 'Only number'
+          return v=> !Number.isInteger(v) || 'Only number'
         },
         validateMax(max){
           return v => (v || '').length <= max || `A maximum of ${max} characters is allowed`
@@ -212,19 +215,11 @@
       fieldsData : [],
       operationLocal : [],
 
-      itemsList: [
-          { state: 'Florida', abbr: 'FL' },
-          { state: 'Georgia', abbr: 'GA' },
-          { state: 'Nebraska', abbr: 'NE' },
-          { state: 'California', abbr: 'CA' },
-          { state: 'New York', abbr: 'NY' },
-        ]
-
     }),
     async beforeUpdate() {
          if( this.open == 0 && this.dataFieldObject && this.openModal ){
             await this.getDataForm();
-            this.structureDataField();
+            this.propsGroup = this.structureDataField( this.dataFieldObject );
             this.operationLocal = this.operationModel
          }
     },
@@ -244,7 +239,10 @@
             let propsFieldGroup = this.propsGroup;
             propsFieldGroup.forEach( group => { 
               group.fields.forEach( field => {
-                fieldsDataPost[field.name] = field.value
+                if(field.type == '7')
+                  fieldsDataPost[field.name] = field.value?.code
+                else
+                  fieldsDataPost[field.name] = field.value
               }) 
               })
             
@@ -262,73 +260,22 @@
               this.close(true);
             }
             this.ocultarLoading()
-
           }
 
         },
         async getDataForm(){
             if(this.openModal && this.dataFieldObject ){
-                
-                //validate action Add or Edit
-                if(this.operationModel.action == "edit" && this.operationModel.pk != "" ){
+
                   this.pk =  this.operationModel.pk;
-                  let dataPropListValues = await this.getpropertyFieldValuesObject(this.$route.params.idObject, this.operationModel.pk );
-
-                  if(dataPropListValues.code == 'OK'){
-                      this.dataFieldObject = dataPropListValues.data.data;
-                      this.open++;
-                  }
-
-                }else if(this.operationModel.action == "add"){
-
-                  let dataPropertyList = await this.getpropertyFieldObject(this.$route.params.idObject, 'capture' );
-      
+                  let dataPropertyList = await this.getpropertyFieldObject(this.$route.params.idObject, 'capture', this.operationModel.action  , this.pk );
                   if(dataPropertyList.code == 'OK'){
-                      this.dataFieldObject = dataPropertyList.data;
+                      this.dataFieldObject = dataPropertyList.data.data;
                       this.open++;
                   }
-                }
             }
         },
-        structureDataField(){
-            
-            let groupId = [];
-            if(this.dataFieldObject ){
-                this.propsGroup = [];
-                let arrayTemp = [];
-                let arrayGroup = [];
-                let countData = this.dataFieldObject.length;
-                let countInt = 0;
-                
-
-                this.dataFieldObject.forEach(ele => {                 
-                  let register = false;
-                  if ( ele.object_group.id != groupId.id && groupId.id != undefined  ){
-                      
-                      arrayGroup = groupId;
-                      arrayGroup['fields']= arrayTemp;
-                      this.propsGroup.push( arrayGroup );
-                      arrayTemp = [];
-                      arrayGroup=[];
-                      register = true;
-                      
-                  }
-                  arrayTemp.push(ele);
-                  groupId = ele.object_group;
-                  countInt++;
-
-                  if(countInt == countData ){
-                      arrayGroup = groupId;
-                      arrayGroup['fields']= arrayTemp;
-                      this.propsGroup.push( arrayGroup );
-                  }
-                });
-
-            }
-        }
-
     },
-     mixins: [apiMixins]
+     mixins: [apiMixins, processData]
     
   }
   
