@@ -1,5 +1,5 @@
  <template>
-    <v-card >
+    <v-card class="container-table-detail" >
         <v-card-text v-for="itemGroup in dataField" 
         :key="itemGroup.id"
         style="padding : 15px;"  >
@@ -21,7 +21,7 @@
                             v-if = "item.type == '1' || item.type == '7'"
                             :label="item.description"
                             :hint="item.hint == '' ? false : item.hint"
-                            :value= item.value
+                            :value="item.value"
                             readonly
                             disabled
                             dense
@@ -35,7 +35,7 @@
                             prepend-icon="email"
                             :label="item.description"
                             :hint="item.hint == null ? '' : item.hint"
-                            :value= item.value
+                            :value="item.value"
                             readonly
                             disabled
                             dense
@@ -48,7 +48,7 @@
                             class="some-style"
                             v-else-if = "item.type == '3'"
                             :autocomplete= item.description
-                            :value= item.value
+                            :value="item.value"
                             readonly
                             auto-grow
                             rows="2"
@@ -76,7 +76,7 @@
                                 readonly
                                 dense
                                 disabled
-                                :value= item.value
+                                :value="item.value"
                                 :hint="item.hint == '' ? false : item.hint"
                                 v-bind="attrs"
                                 v-on="on"
@@ -89,9 +89,8 @@
                             class="some-style"
                             v-else-if = "item.type == '5'"
                             :label="item.description"
-                            type="number"
                             :hint="item.hint == '' ? false : item.hint"
-                            :value= item.value
+                            :value="item.value"
                             readonly
                             disabled
                             dense
@@ -104,7 +103,7 @@
                             v-else-if = "item.type == '6'"
                             :label="item.description"
                             :hint="item.hint == '' ? false : item.hint"
-                            :value= item.value
+                            :value="item.value"
                             readonly
                             disabled
                             dense
@@ -138,6 +137,10 @@ export default {
 
     .divider-group{
         margin-bottom: 10px;
+    }
+
+    .container-table-detail{
+        margin-bottom: 50px;
     }
 
 </style>

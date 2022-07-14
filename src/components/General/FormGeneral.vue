@@ -59,6 +59,7 @@
                           required>
                         </v-text-field>
 
+
                         <!-- Validate if Type 3 -- text Area -->
                          <v-textarea 
                           v-else-if = "item.type == '3'"
@@ -106,20 +107,9 @@
                          <v-text-field
                           v-else-if = "item.type == '5'"
                           :label="item.description+ (item.required == 1  ?' *' : '')"
-                          :counter= item.number_charac
+                          :counter=item.number_charac
                           type="number"
-                          :rules="[rules.required(item.description, item.required), rules.number(), rules.validateMax(item.number_charac)] "
-                          :hint="item.hint == '' ? false : item.hint"
-                          :name = item.name
-                          v-model="item.value">
-                        </v-text-field>
-
-                        <!-- Validate if Type 6 -- Decimal -->
-                         <v-text-field
-                          v-else-if = "item.type == '6'"
-                          :label="item.description+ (item.required == 1  ?' *' : '')"
-                          counter= item.number_charac
-                          :rules="[rules.required(item.description, item.required), rules.validateMax(item.number_charac)] "
+                          :rules="[ rules.number(), rules.required(item.description, item.required), rules.validateMax(item.number_charac) ] "
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
                           v-model="item.value">
@@ -180,7 +170,7 @@
   
   export default {
     //Creacion de propiedad para manipular la visibilidad del modal
-    props: ['openModal','operationModel'],
+    props: ['openModal','operationModel','idObject'],
     data: () => ({ 
       propsField :[],
       propsGroup: [],
@@ -193,20 +183,20 @@
       
       //rules in the fields
       rules: {
+        number(){
+          return v=> /^[0-9]+$/.test(v) || 'Only number'
+        },
         emailRules(){
           return v => /.+@.+/.test(v) || 'E-mail must be valid';
         },
         required(name, required){
-          if(required== 1)
+          /*if(required== 1)
             return v => !!v ||  name+' is required';
-          else
+          else*/
            return true
         },
-        number(){
-          return v=> !Number.isInteger(v) || 'Only number'
-        },
         validateMax(max){
-          return v => (v || '').length <= max || `A maximum of ${max} characters is allowed`
+          return v => (v || '').toString().length <= max || `A maximum of ${max} characters is allowed`
         }
 
       },
@@ -220,11 +210,11 @@
          if( this.open == 0 && this.dataFieldObject && this.openModal ){
             await this.getDataForm();
             this.propsGroup = this.structureDataField( this.dataFieldObject );
-            this.operationLocal = this.operationModel
+            this.operationLocal = this.operationModel;
          }
     },
     methods: {
-         ...mapMutations(['mostrarLoading','ocultarLoading',]),
+        ...mapMutations(['mostrarLoading','ocultarLoading',]),
         close(save=false){
             //Se envia el parametro a la vista por medio del emit para cerrar el modal
             Object.assign(this.$data, this.$options.data.call(this));
@@ -252,9 +242,9 @@
 
             //send data capture in the form - api
             if(this.operationLocal.action == "add")
-              responsePost = await this.postDataObject(this.$route.params.idObject, fieldsDataPost );
+              responsePost = await this.postDataObject(this.idObject, fieldsDataPost );
             else
-              responsePost = await this.patchDataObject(this.$route.params.idObject, fieldsDataPost, this.operationLocal.pk  );
+              responsePost = await this.patchDataObject(this.idObject, fieldsDataPost, this.operationLocal.pk  );
 
             if( responsePost.code == 'OK' ){
               this.close(true);
@@ -267,7 +257,7 @@
             if(this.openModal && this.dataFieldObject ){
 
                   this.pk =  this.operationModel.pk;
-                  let dataPropertyList = await this.getpropertyFieldObject(this.$route.params.idObject, 'capture', this.operationModel.action  , this.pk );
+                  let dataPropertyList = await this.getpropertyFieldObject(this.idObject, 'capture', this.operationModel.action  , this.pk );
                   if(dataPropertyList.code == 'OK'){
                       this.dataFieldObject = dataPropertyList.data.data;
                       this.open++;

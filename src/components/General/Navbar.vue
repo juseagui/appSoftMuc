@@ -13,7 +13,7 @@
                 <v-list-item link class="px-2"
                 :to =" '/user/'+objeUser+'/userDetail/'+idUser"  >
                     <v-list-item-avatar>
-                        <v-img src="https://media-exp1.licdn.com/dms/image/C4D03AQEJCS1rboiTug/profile-displayphoto-shrink_800_800/0/1632367456836?e=1649289600&v=beta&t=kND8G24AjDF0wSR01ch9CXKonTEewh0ZoTSLQgxf2fk"></v-img>
+                        <v-img src="https://media-exp1.licdn.com/dms/image/C4D03AQEJCS1rboiTug/profile-displayphoto-shrink_800_800/0/1632367456836?e=1658966400&v=beta&t=_rc2gnO0X45pRcdwE8XMcc2_fmBToGRY2BcQ3HcNeSY"></v-img>
                     </v-list-item-avatar>
                   
                     <v-list-item-content>
@@ -101,7 +101,7 @@ export default {
   mounted(){
 
     this.idUser = localStorage.getItem('id');
-    this.objeUser = "1";
+    this.objeUser = "6";
 
     //Get objects Navbar
     //let dataObjects = await this.getObjects();

@@ -3,7 +3,7 @@
         
         <v-toolbar-title>
           <b>{{ titleObject }}</b>
-          <v-row dense v-show="source == 'detailGeneral'" >
+          <v-row dense v-show="source == 'detailGeneral' || source == 'detailObject'" >
             <v-col style = "    font-weight: 500; letter-spacing: 0.0125em !important; font-size: 0.83em;" >
               <v-icon dense>hotel_class</v-icon>
               {{codeTitle}}
@@ -16,12 +16,16 @@
         <v-btn icon @click="$router.go(-1)">
           <v-icon>keyboard_return</v-icon>
         </v-btn>
-        <v-btn icon v-show="source == 'general'">
+        <v-btn icon v-show="source == 'ListGeneral'">
           <v-icon>search</v-icon>
         </v-btn>
         <v-btn icon @click="toggleModalViewEdit"
-        v-show="source == 'detailGeneral'">
+        v-show="source == 'detailGeneral' || source == 'detailObject'">
           <v-icon>edit_note</v-icon>
+        </v-btn>
+        <v-btn icon @click="toggleModalRelationship"
+        v-show="source == 'detailObject'">
+          <v-icon>view_quilt</v-icon>
         </v-btn>
  
         <v-spacer></v-spacer>
@@ -52,7 +56,7 @@
         
       </v-card>
 
-        <v-btn color="primary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'general'">
+        <v-btn color="primary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'ListGeneral'">
           {{ $t("viewGeneral.btnAdd") }}
         </v-btn>
 
@@ -78,6 +82,10 @@ export default {
     toggleModalViewEdit() {
       Object.assign(this.$data, this.$options.data.call(this));
       this.$emit('listenerToolbar', 'edit', this.codeTitle, false); 
+    },
+    toggleModalRelationship() {      
+      Object.assign(this.$data, this.$options.data.call(this));
+      this.$emit( 'listenerToolbarRelationship' ); 
     }
  }
 }
@@ -85,7 +93,6 @@ export default {
 
 
 <style scoped>
-
     .toolbar-margin-person {
     margin-top: 6px;
     margin-bottom: 10px;

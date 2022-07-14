@@ -21,13 +21,18 @@ export const apiMixins = {
             
         },
 
-        async getDataObjectList(idObject, offset = 0, limit = 15){
-            debugger
+        async getDataObjectList(idObject, offset = 0, limit = 15, filterRelationship = {} ){
+            
             let responseApi = [];
+            let params = "";
+
+            //validate if filter relationship
+            if( Object.keys(filterRelationship).length > 0 )
+                params += "&parentRelationship="+filterRelationship.parentRelationship+"&pkParentRelationship="+filterRelationship.pkParentRelationship;
+
             await this.axios
-            .get( "/objects/getDataObject/" + idObject +"?offset="+ offset +"&limit=" +limit )
+            .get( "/objects/data/" + idObject +"?offset="+ offset +"&limit="+ limit + params )
             .then((response) => {
-                console.log(response)
                 responseApi.data = response.data.data;
                 responseApi.code = 'OK';
                 responseApi.msg = "";
@@ -46,7 +51,7 @@ export const apiMixins = {
         async getpropertyFieldObject(idObject, option = 'visible' ,action = 'add', pk = ""){
 
             let responseApi = [];
-            let params = "?";
+            let params = "?object="+idObject+"&";
             //Defined action
             switch (option){
                 case 'visible':
@@ -57,7 +62,7 @@ export const apiMixins = {
                     break;
             }
 
-            await this.axios.get("/objects/FieldObject/" + idObject + params)
+            await this.axios.get("/objects/field/"+params)
             .then((response) => {
                 responseApi.data = response.data.data;
                 responseApi.code = 'OK';
@@ -79,7 +84,7 @@ export const apiMixins = {
             let responseApi = [];
           
             await this.axios
-            .get( "/objects/getDetailItemObject/" + pk + "?object="+ idObject )
+            .get( "/objects/field/" + pk + "?object="+ idObject )
             .then((response) => {
                 responseApi.data = response.data;
                 responseApi.code = 'OK';
@@ -97,10 +102,58 @@ export const apiMixins = {
         },
 
 
+        async getRelationshipObjects( pk, visible = null ){
+
+            let responseApi = [];
+            let params = "";
+
+            if(visible)
+                params = "?visible="+visible;
+          
+            await this.axios
+            .get( "/objects/relations/"+pk+params )
+            .then((response) => {
+                responseApi.data = response.data;
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch((error) => {
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+                console.log(data);
+            });
+            
+            return responseApi;    
+            
+        },
+
+        async postRelationshipObjects( data ){
+            //var data is list
+
+            let responseApi = [];
+          
+            await this.axios.post('objects/relations/', data )
+            .then((response) => {
+                responseApi.data = response.data;
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch((error) => {
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+                console.log(data);
+            });
+            
+            return responseApi; 
+
+        },
+
         async postDataObject(idObject, data){
             
             let responseApi = [];
-            await this.axios.post('objects/FieldObject/?object='+idObject, data )
+            await this.axios.post('objects/data/?object='+idObject, data )
             .then( response =>{
                 responseApi.data = [];
                 responseApi.code = 'OK';
@@ -118,7 +171,7 @@ export const apiMixins = {
         async patchDataObject(idObject, data, pk){
             
             let responseApi = [];
-            await this.axios.patch('objects/FieldObject/'+pk+'/?object='+idObject, data )
+            await this.axios.patch('objects/data/'+pk+'/?object='+idObject, data )
             .then( response =>{
                 responseApi.data = [];
                 responseApi.code = 'OK';
@@ -133,32 +186,11 @@ export const apiMixins = {
             return responseApi;
         },
 
-        async getpropertyFieldValuesObject(idObject, pk ){
-
-            let responseApi = [];
-          
-            await this.axios
-            .get( "/objects/getDetailItemObject/" + pk + "?object="+ idObject )
-            .then((response) => {
-                responseApi.data = response.data;
-                responseApi.code = 'OK';
-                responseApi.msg = "";
-            })
-            .catch((error) => {
-                responseApi.data = [];
-                responseApi.code = 'ERROR';
-                responseApi.msg = error.response.data;
-            });
-            
-            return responseApi;    
-            
-        },
-
         async getObjectsPermissions(){
             
             let responseApi = [];
             await this.axios
-            .get( "/objects/objectsPermissions/" )
+            .get( "/objects/permissions/" )
             .then((response) => {
                 responseApi.data = response.data;
                 responseApi.code = 'OK';

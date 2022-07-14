@@ -134,7 +134,7 @@
         detailItem(item){
           let url = '';
 
-          if(item.view == 'general')
+          if(item.view == 'general' || item.view == 'object')
             url += item.view+'/'+item.id;
           else
             url += item.view;

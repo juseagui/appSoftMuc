@@ -19,7 +19,18 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/General/General.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/General/ListGeneral.vue')
+  },
+  {
+    path: '/object/:idObject',
+    name: 'Object',
+    meta: {
+      requiresAuth: true
+    },
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Object/ListObjects.vue')
   },
   {
     path: '/home/',
@@ -53,6 +64,17 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/General/DetailGeneral.vue')
+  },
+  {
+    path: '/object/:idObject/detail/:idDetail',
+    name: 'DetailGeneral',
+    meta: {
+      requiresAuth: true
+    },
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Object/DetailObject.vue')
   },
   {
     path: '/system',

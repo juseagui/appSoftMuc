@@ -1,9 +1,9 @@
 <template>
   <v-app>
-    <!-- Componente Navbar nagacion entre objectos y modulos -->
+    <!-- Navbar component navigation between objects and modules -->
     <Navbar />
     <v-container>
-         <!-- Componente Toolbar para header de visualizacion de objectos -->
+         <!-- Toolbar component for object display header -->
       <ToolbarGeneral 
           :titleObject="titleObject" 
           :codeTitle="codeTitle" 
@@ -13,8 +13,8 @@
 
       <TableDetail :dataField="propsGroup"  />
 
-      <!-- Componente modal para creación y edicion de registros -->
-      <FormGeneral :openModal="visibilityModal" :operationModel="operationModel"
+      <!-- Modal component for creating and editing records -->
+      <FormGeneral :openModal="visibilityModal" :operationModel="operationModel" :idObject="actualObjectForm" 
         @listenerModal="toggleModal" />
 
     </v-container>
@@ -42,9 +42,10 @@ export default {
           dataDetail : [],
           propsGroup : [],
 
-          //params for modal
+         //parameters for the modal of edition and creation of objects
           visibilityModal: false,
           operationModel : { action: "", pk: "" },
+          actualObjectForm : this.$route.params.idObject,
           headersDetail: [
             { text: "Fecha de Creación", value: "", ico : "event_available"},
             {text: "Fecha de Modificación", value: "", ico : "restore"},
@@ -64,24 +65,34 @@ export default {
     TableDetail
   },
   methods: {
-      async getDetailItem(){
 
-          let dataPropListValues = await this.getpropertyFieldValuesObject( this.$route.params.idObject, this.$route.params.idDetail );
+    /*---------------------------------------------------
+    Name: getDetailItem
+    Description: get item detail of item general object
+    Alters component: TableDetail
+    ---------------------------------------------------*/
+    async getDetailItem(){
 
-          if(dataPropListValues.code == 'OK'){
-            this.dataDetail = dataPropListValues.data.data;
-            this.titleObject = this.dataDetail[0]['representation'];
-            this.codeTitle = this.$route.params.idDetail;
+        let dataPropListValues = await this.getpropertyFieldValuesObject( this.$route.params.idObject, this.$route.params.idDetail );
 
-            //set values for component ToolbarGeneral
-            this.headersDetail[0].value = dataPropListValues.data['created_date'];
-            this.headersDetail[1].value = dataPropListValues.data['modified_date'];
-            this.headersDetail[2].value = "sergio Aguilera";
+        if(dataPropListValues.code == 'OK'){
+          this.dataDetail = dataPropListValues.data.data;
+          this.titleObject = this.dataDetail[0]['representation'];
+          this.codeTitle = this.$route.params.idDetail;
 
-          }
-      },
+          //set values for component ToolbarGeneral
+          this.headersDetail[0].value = dataPropListValues.data['created_date'];
+          this.headersDetail[1].value = dataPropListValues.data['modified_date'];
+          this.headersDetail[2].value = "sergio Aguilera";
 
-    //Activate Modal the creation new item
+        }
+    },
+
+    /*---------------------------------------------------
+    Name: toggleModal
+    Description: Activate Modal the creation new item
+    Alters component: ToolbarGeneral
+    ---------------------------------------------------*/
     async toggleModal(action = "",pk="", save = false) {
       //Defined parms for model
       this.operationModel.action = action;

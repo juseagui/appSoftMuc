@@ -80,7 +80,8 @@
 
           <!-- Componente modal para creación y edicion de registros -->
           <FormGeneral :openModal="visibilityModal" :operationModel="operationModel"
-          @listenerModal="toggleModal" /> 
+          @listenerModal="toggleModal" />
+          
         </v-card>
       </v-tab-item>
       <v-tab-item
@@ -95,9 +96,7 @@
         key="Three"
         transition= false
       >
-      
-        <v-card flat>
-          
+        <v-card flat>   
         </v-card>
       </v-tab-item>
       </v-tabs-items >
@@ -111,7 +110,6 @@
 <script>
 import Navbar from "@/components/General/Navbar";
 import TabsUser from "@/components/User/TabsUser";
-import HelloWorld from "@/components/HelloWorld";
 import CalendarUser from "@/components/User/CalendarUser";
 import ToolbarGeneral from "@/components/General/ToolbarGeneral";
 import FormGeneral from "@/components/General/FormGeneral";
@@ -160,7 +158,6 @@ export default {
   components: {
     Navbar,
     TabsUser,
-    HelloWorld,
     CalendarUser,
     ToolbarGeneral,
     FormGeneral,

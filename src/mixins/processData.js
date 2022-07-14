@@ -2,7 +2,6 @@ export const processData = {
     methods: {
 
         structureDataField( data ){
-            debugger
             let groupId = [];
             let propsGroup = [];
             if( data ){
@@ -37,7 +36,26 @@ export const processData = {
             }
             
             return propsGroup;
-          }
+          },
+
+
+        generateCounPaginator( dataCount, itemsPerPage ){
+            return Math.ceil(dataCount / itemsPerPage);
+        },
+
+        calculateCountPage( page, itemsPerPage ){
+            let ini = 0;
+            let limit = 0;
+
+            if (page == 1 || page == 0) {
+                limit = itemsPerPage;
+            } else {
+                ini = itemsPerPage * (page - 1);
+                limit = itemsPerPage * page;
+            }
+            
+            return { ini, limit }
+        }
     }
 
 };
