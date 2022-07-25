@@ -23,7 +23,6 @@
             <span class="text-h6" >{{itemGroup.name}} </span>
          </v-alert>
          
-         
             <v-container>
                 <v-row>
                     <!-- interaccion de campos de un determinado objecto -->
@@ -42,6 +41,8 @@
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
                           v-model="item.value"
+                          :readonly="validateIsEdit( item.edit, item.name, item.type )"
+                          :disabled="validateIsEdit( item.edit, item.name, item.type )"
                           required>
                         </v-text-field>
 
@@ -56,6 +57,8 @@
                           :hint="item.hint == null ? '' : item.hint"
                           :name = item.name
                           v-model="item.value"
+                          :readonly="validateIsEdit( item.edit, item.name, item.type )"
+                          :disabled="validateIsEdit( item.edit, item.name, item.type )"
                           required>
                         </v-text-field>
 
@@ -71,6 +74,8 @@
                           :rules ="[rules.required(item.description, item.required),rules.validateMax(item.number_charac)]"
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
+                          :readonly="validateIsEdit( item.edit, item.name, item.type )"
+                          :disabled="validateIsEdit( item.edit, item.name, item.type )"
                           v-model="item.value"
                           >
                         </v-textarea>
@@ -112,6 +117,8 @@
                           :rules="[ rules.number(), rules.required(item.description, item.required), rules.validateMax(item.number_charac) ] "
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
+                          :readonly="validateIsEdit( item.edit, item.name, item.type )"
+                          :disabled="validateIsEdit( item.edit, item.name, item.type )"
                           v-model="item.value">
                         </v-text-field>
 
@@ -126,6 +133,8 @@
                           :items="item.object_list.ListValues"
                           item-text="description"
                           item-value="code"
+                          :readonly="validateIsEdit( item.edit, item.name, item.type )"
+                          :disabled="validateIsEdit( item.edit, item.name, item.type )"
                           return-object
                         ></v-select>
 
@@ -170,11 +179,11 @@
   
   export default {
     //Creacion de propiedad para manipular la visibilidad del modal
-    props: ['openModal','operationModel','idObject'],
+    props: ['openModal','operationModel','idObject','source','isRelationship'],
     data: () => ({ 
-      propsField :[],
       propsGroup: [],
       dataFieldObject: [],
+      cloneDataObject: [],
       open : 0,
       valid : false,
       pk : null,
@@ -186,18 +195,21 @@
         number(){
           return v=> /^[0-9]+$/.test(v) || 'Only number'
         },
+
         emailRules(){
           return v => /.+@.+/.test(v) || 'E-mail must be valid';
         },
+
         required(name, required){
           /*if(required== 1)
             return v => !!v ||  name+' is required';
           else*/
-           return true
+          return true
         },
+
         validateMax(max){
           return v => (v || '').toString().length <= max || `A maximum of ${max} characters is allowed`
-        }
+        },
 
       },
 
@@ -209,18 +221,31 @@
     async beforeUpdate() {
          if( this.open == 0 && this.dataFieldObject && this.openModal ){
             await this.getDataForm();
+            //Clone non-reactive object
+            this.cloneDataObject = JSON.parse(JSON.stringify(this.dataFieldObject));
             this.propsGroup = this.structureDataField( this.dataFieldObject );
             this.operationLocal = this.operationModel;
          }
     },
     methods: {
         ...mapMutations(['mostrarLoading','ocultarLoading',]),
+
+        /*---------------------------------------------------
+        Name: close
+        Description:
+        Alters component:
+        ---------------------------------------------------*/
         close(save=false){
             //Se envia el parametro a la vista por medio del emit para cerrar el modal
             Object.assign(this.$data, this.$options.data.call(this));
-            this.$emit('listenerModal', null, null, save );    
+            this.$emit('listenerModal', null, null, save, null , this.isRelationship );    
         },
-        //Validate fields and request post
+
+        /*---------------------------------------------------
+        Name: validate
+        Description: Validate fields and request post
+        Alters component:
+        ---------------------------------------------------*/
         async validate (){
           
           let validForm = this.$refs.form.validate();
@@ -239,12 +264,18 @@
             let responsePost = [];
             this.mostrarLoading({ titulo : 'PRUEBA'});
             await new Promise(resolve => setTimeout(resolve, 1000))
-
+            
             //send data capture in the form - api
-            if(this.operationLocal.action == "add")
-              responsePost = await this.postDataObject(this.idObject, fieldsDataPost );
-            else
+            if(this.operationLocal.action == "add"){
+              
+              if( this.source != "ListObjects" )
+                responsePost = await this.postDataObject(this.idObject, fieldsDataPost );
+              else
+                 responsePost = await this.postObject( fieldsDataPost );
+
+            }else{
               responsePost = await this.patchDataObject(this.idObject, fieldsDataPost, this.operationLocal.pk  );
+            }
 
             if( responsePost.code == 'OK' ){
               this.close(true);
@@ -253,9 +284,14 @@
           }
 
         },
+
+        /*---------------------------------------------------
+        Name: getDataForm
+        Description:
+        Alters component:
+        ---------------------------------------------------*/
         async getDataForm(){
             if(this.openModal && this.dataFieldObject ){
-
                   this.pk =  this.operationModel.pk;
                   let dataPropertyList = await this.getpropertyFieldObject(this.idObject, 'capture', this.operationModel.action  , this.pk );
                   if(dataPropertyList.code == 'OK'){
@@ -264,6 +300,32 @@
                   }
             }
         },
+        
+        /*---------------------------------------------------
+        Name: validateIsEdit
+        Description: function that allows to validate if the field is editable according to its properties
+        Alters component:
+        ---------------------------------------------------*/
+        validateIsEdit( edit, propertyName, type ){
+
+          if( this.operationModel.action == 'edit' ){
+            //find the initial value
+            let foundFieldProperty = this.cloneDataObject.find( fieldProperty => fieldProperty.name === propertyName );
+
+            let oldValueField = null;
+            if( type == '7' )
+              oldValueField = foundFieldProperty.value.description;
+            else
+              oldValueField = foundFieldProperty.value;
+
+            if( oldValueField == null ){
+              return false; 
+            }else{
+              return edit == '1' ? false : true;
+            }
+        
+          }
+        }
     },
      mixins: [apiMixins, processData]
     

@@ -21,6 +21,28 @@ export const apiMixins = {
             
         },
 
+        async postObject( data ){
+           
+            //transform information important for the service
+            data.category_object = data.category_object_id;
+            delete data.category_object_id;
+
+            let responseApi = [];
+            await this.axios.post('objects/objects/', data )
+            .then( response =>{
+                responseApi.data = [];
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch(error=>{
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+            })
+            
+            return responseApi;
+        },
+
         async getDataObjectList(idObject, offset = 0, limit = 15, filterRelationship = {} ){
             
             let responseApi = [];

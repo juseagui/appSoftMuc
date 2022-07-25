@@ -15,7 +15,7 @@
       <TableDetail :dataField="propsGroup"  />
 
       <!-- Modal component for creating and editing records -->
-      <FormGeneral :openModal="visibilityModal" :operationModel="operationModel" :idObject="actualObjectForm"
+      <FormGeneral :openModal="visibilityModal" :operationModel="operationModel" :idObject="actualObjectForm" :source="source" :isRelationship="isSaveRelationship"
         @listenerModal="toggleModal" />
 
       <!-- Modal component for object relationship management -->
@@ -57,7 +57,6 @@
             codeTitle : "",
             source : "detailObject",
             
-            
             //Data object field -> value
             dataDetail : [],
             propsGroup : [],
@@ -71,6 +70,7 @@
               {text: "Fecha de Modificación", value: "", ico : "restore"},
               {text: "creador", value: "", ico : "person"}
             ],
+            isSaveRelationship : false,
 
             //parameters for object relationship management
             visibilityModalRelationship : false,
@@ -146,8 +146,8 @@
       },
 
       /*---------------------------------------------------
-      Name: getRelationshipObjectItem
-      Description: Get related objects
+      Name: createTableRelationship
+      Description: Create the tabs and tables for the functioning of the relationships
       Alters component: 
       ---------------------------------------------------*/
       async createTableRelationship (){
@@ -180,7 +180,7 @@
       /*---------------------------------------------------
       Name: getRelationshipObjectItem
       Description: Gets the data information of the child object
-      Alters component: TableGeneral
+      Alters component: FormRelationship
       ---------------------------------------------------*/
       async getDataObjectRelationship ( objChild ){
 
@@ -229,21 +229,27 @@
       Description: Activate Modal the creation new and edit item for component FormGeneral
       Alters component: FormGeneral
       ---------------------------------------------------*/
-      async toggleModal(action = "",pk="", save = false, idObject = null ) {
+      async toggleModal(action = "",pk="", save = false, idObject = null, relationship = false ) {
         //Defined parms for model
-        this.operationModel.action = action;
-        this.operationModel.pk = pk;
-        this.visibilityModal = !this.visibilityModal;
 
         if( idObject == null )
           this.actualObjectForm = this.$route.params.idDetail;
         else
           this.actualObjectForm = idObject;
+        
+        this.operationModel.action = action;
+        this.operationModel.pk = pk;
+        this.visibilityModal = !this.visibilityModal;
+        this.isSaveRelationship =  relationship;
 
         if(save){
-          await this.getDetailItem();
-          this.structureDataField(this.dataDetail);
-        }
+          if(!relationship){
+            await this.getDetailItem();
+            this.propsGroup = this.structureDataField(this.dataDetail);
+          }else{
+            await this.listenerChangePage( this.dataTableRelationship.dataPaginator.pageIni );
+          }
+        }  
       },
 
       /*---------------------------------------------------
@@ -350,7 +356,7 @@
             this.$router.push('/general/'+this.dataTableRelationship.idObjectRelationship+'/detail/'+item.pk);
             break;
           case 'editItem':
-            this.toggleModal('edit',item.pk, false, this.dataTableRelationship.idObjectRelationship );
+            this.toggleModal('edit',item.pk, false, this.dataTableRelationship.idObjectRelationship, true );
             break;
         }
       },

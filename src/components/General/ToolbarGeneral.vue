@@ -81,7 +81,7 @@ export default {
     },
     toggleModalViewEdit() {
       Object.assign(this.$data, this.$options.data.call(this));
-      this.$emit('listenerToolbar', 'edit', this.codeTitle, false); 
+      this.$emit('listenerToolbar', 'edit', this.codeTitle, false, this.$route.params.idObject); 
     },
     toggleModalRelationship() {      
       Object.assign(this.$data, this.$options.data.call(this));

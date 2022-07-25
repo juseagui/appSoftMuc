@@ -11,6 +11,11 @@
                 v-for="(itemTab, index) in dataTabs" :key="itemTab.object_child"
                 @click="listenerActionChangeTabs(itemTab.object_child, index)"
                 >
+
+                <v-icon class="mr-1" dense>
+                    {{itemTab.object_child_icon}}
+                </v-icon>
+
                 {{itemTab.description}}
                 </v-tab>
             </v-tabs>
