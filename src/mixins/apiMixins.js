@@ -151,8 +151,7 @@ export const apiMixins = {
         },
 
         async postRelationshipObjects( data ){
-            //var data is list
-
+            
             let responseApi = [];
           
             await this.axios.post('objects/relations/', data )
@@ -206,6 +205,65 @@ export const apiMixins = {
             })
             
             return responseApi;
+        },
+
+        //field
+        async postFieldObject( data ){
+            
+            //transform information important for the service
+            data.object_field = data.object_field_id;
+            data.object_group = data.object_group_id;
+            data.object_relationship = data.object_relationship_id;
+            data.object_list = data.object_list_id;
+            delete data.object_field_id;
+            delete data.object_group_id;
+            delete data.object_relationship_id;
+            delete data.object_list_id;
+
+            let responseApi = [];
+            await this.axios.post('objects/field/', data )
+            .then( response =>{
+                responseApi.data = [];
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch(error=>{
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+            })
+            
+            return responseApi;
+
+        },
+
+        async patchFieldObject(data, pk){
+
+            //transform information important for the service
+            data.object_field = data.object_field_id;
+            data.object_group = data.object_group_id;
+            data.object_relationship = data.object_relationship_id;
+            data.object_list = data.object_list_id;
+            delete data.object_field_id;
+            delete data.object_group_id;
+            delete data.object_relationship_id;
+            delete data.object_list_id;
+            
+            let responseApi = [];
+            await this.axios.patch('objects/field/'+pk+'/', data )
+            .then( response =>{
+                responseApi.data = [];
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch(error=>{
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+            })
+            
+            return responseApi;
+
         },
 
         async getObjectsPermissions(){

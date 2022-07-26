@@ -113,7 +113,6 @@
                           v-else-if = "item.type == '5'"
                           :label="item.description+ (item.required == 1  ?' *' : '')"
                           :counter=item.number_charac
-                          type="number"
                           :rules="[ rules.number(), rules.required(item.description, item.required), rules.validateMax(item.number_charac) ] "
                           :hint="item.hint == '' ? false : item.hint"
                           :name = item.name
@@ -192,8 +191,8 @@
       
       //rules in the fields
       rules: {
-        number(){
-          return v=> /^[0-9]+$/.test(v) || 'Only number'
+        number() {
+          return v=> /^[0-9]+$/.test(v) || (  (v == '' || v== undefined ) ? true : 'Only number' );
         },
 
         emailRules(){
@@ -201,10 +200,10 @@
         },
 
         required(name, required){
-          /*if(required== 1)
+          if(required== 1)
             return v => !!v ||  name+' is required';
-          else*/
-          return true
+          else
+            return true
         },
 
         validateMax(max){
@@ -255,9 +254,9 @@
             propsFieldGroup.forEach( group => { 
               group.fields.forEach( field => {
                 if(field.type == '7')
-                  fieldsDataPost[field.name] = field.value?.code
+                  fieldsDataPost[field.name] = field.value?.code;
                 else
-                  fieldsDataPost[field.name] = field.value
+                  fieldsDataPost[field.name] = field.value == '' ? null : field.value;
               }) 
               })
             
@@ -267,14 +266,20 @@
             
             //send data capture in the form - api
             if(this.operationLocal.action == "add"){
-              
-              if( this.source != "ListObjects" )
-                responsePost = await this.postDataObject(this.idObject, fieldsDataPost );
-              else
-                 responsePost = await this.postObject( fieldsDataPost );
 
+              if( this.source == "ListObjects" )
+                responsePost = await this.postObject( fieldsDataPost );
+              else if( this.idObject == '3' )                
+                responsePost = await this.postFieldObject( fieldsDataPost );
+              else
+                responsePost = await this.postDataObject(this.idObject, fieldsDataPost );
+              
             }else{
-              responsePost = await this.patchDataObject(this.idObject, fieldsDataPost, this.operationLocal.pk  );
+
+              if( this.idObject == '3' )
+                responsePost = await this.patchFieldObject( fieldsDataPost );
+              else
+                responsePost = await this.patchDataObject(this.idObject, fieldsDataPost, this.operationLocal.pk  );
             }
 
             if( responsePost.code == 'OK' ){

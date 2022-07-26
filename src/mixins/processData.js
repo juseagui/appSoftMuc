@@ -51,7 +51,7 @@ export const processData = {
                 limit = itemsPerPage;
             } else {
                 ini = itemsPerPage * (page - 1);
-                limit = itemsPerPage * page;
+                limit = itemsPerPage;
             }
             
             return { ini, limit }
