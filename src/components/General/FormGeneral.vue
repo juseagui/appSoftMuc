@@ -6,22 +6,22 @@
       max-width="1200px"
     >
       <v-card >
-         <v-form 
+        <v-form 
           v-model="valid"
           ref="form">
-        <v-card-text v-for="(itemGroup, index) in propsGroup" 
-        style="padding : 15px;"
-        :key="index"   >
-         <v-alert
-          border="left"
-          style=" margin-bottom: 0px; "
-          colored-border
-          :dense="true"
-          color="primary"
-          transition = "expand-x-transition"
-          elevation="0">
-            <span class="text-h6" >{{itemGroup.name}} </span>
-         </v-alert>
+          <v-card-text v-for="(itemGroup, index) in propsGroup" 
+          style="padding : 15px;"
+          :key="index"   >
+            <v-alert
+              border="left"
+              style=" margin-bottom: 0px; "
+              colored-border
+              :dense="true"
+              color="primary"
+              transition = "expand-x-transition"
+              elevation="0">
+                <span class="text-h6" >{{itemGroup.name}} </span>
+            </v-alert>
          
             <v-container>
                 <v-row>
@@ -277,7 +277,7 @@
             }else{
 
               if( this.idObject == '3' )
-                responsePost = await this.patchFieldObject( fieldsDataPost );
+                responsePost = await this.patchFieldObject( fieldsDataPost, this.operationLocal.pk );
               else
                 responsePost = await this.patchDataObject(this.idObject, fieldsDataPost, this.operationLocal.pk  );
             }

@@ -73,8 +73,8 @@
 
             </v-card>
 
-            <v-btn color="primary" dark  @click="toggleModalViewAdd">
-                {{ $t("viewGeneral.btnAdd") }}
+            <v-btn color="secondary" dark class="mb-2"  @click="toggleModalViewAdd">
+               <v-icon small :left="true"> add</v-icon> {{ $t("viewGeneral.btnAdd") }}
             </v-btn>
 
             </v-toolbar>

@@ -14,7 +14,7 @@
                         cols="12"
                         :sm="item.type == 3 ? null : item.columns == 1 ? '12' : item.columns == 2 ? '8' :'6' "
                         :md="item.type == 3 ? null : item.columns == 1 ? '12' : item.columns == 2 ? '6' :'4' ">
-
+                        
                         <!-- Validate if Type 1 or 7 -- text -->
                         <v-text-field
                             class="some-style"
@@ -54,7 +54,7 @@
                             rows="2"
                             disabled
                             dense
-                            :label="item.description+ (item.required == 1  ?' *' : '')"
+                            :label="item.description"
                             :hint="item.hint == '' ? false : item.hint"
                             >
                         </v-textarea>
@@ -74,8 +74,8 @@
                                 :label="item.description"
                                 prepend-icon="insert_invitation"
                                 readonly
-                                dense
                                 disabled
+                                dense
                                 :value="item.value"
                                 :hint="item.hint == '' ? false : item.hint"
                                 v-bind="attrs"
@@ -85,14 +85,15 @@
                         </v-menu>
 
                             <!-- Validate if Type 5 -- Number -->
-                            <v-text-field
+                        <v-text-field
                             class="some-style"
                             v-else-if = "item.type == '5'"
                             :label="item.description"
                             :hint="item.hint == '' ? false : item.hint"
                             :value="item.value"
+                            :append-icon="(item.type_relation == 2 && item.value != null) ? 'zoom_in' : 'undefined'"
+                            @click:append="toggleMarker( item.object_relationship_id,item.code )"
                             readonly
-                            disabled
                             dense
                             required>
                         </v-text-field>
@@ -105,7 +106,6 @@
                             :hint="item.hint == '' ? false : item.hint"
                             :value="item.value"
                             readonly
-                            disabled
                             dense
                             required>
                         </v-text-field>
@@ -122,9 +122,20 @@
 <script>
 export default {
     props: ['dataField'],
-   data: () => ({ 
+    data: () => ({ 
        count : 0
-   }),
+    }),
+    methods: {
+        /*---------------------------------------------------
+        Name: toggleMarker
+        Description: redirect to relational item
+        Alters component: 
+        ---------------------------------------------------*/
+        toggleMarker(idObject, pk ){
+            this.$router.push('/general/'+idObject+'/detail/'+pk);
+        }
+    }
+
 }
 </script>
 

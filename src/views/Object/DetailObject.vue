@@ -66,9 +66,9 @@
             visibilityModal: false,
             operationModel : { action: "", pk: "" },
             headersDetail: [
-              { text: "Fecha de Creación", value: "", ico : "event_available"},
-              {text: "Fecha de Modificación", value: "", ico : "restore"},
-              {text: "creador", value: "", ico : "person"}
+              { text: "Fecha de Creación", value: "", ico : "event_available", chip : false},
+              {text: "Fecha de Modificación", value: "", ico : "restore", chip : false},
+              {text: "creador", value: "", ico : "person", chip : true}
             ],
             isSaveRelationship : false,
 
@@ -357,6 +357,9 @@
             break;
           case 'editItem':
             this.toggleModal('edit',item.pk, false, this.dataTableRelationship.idObjectRelationship, true );
+            break;
+          case 'addItem':
+            this.toggleModal('add',null, false, this.dataTableRelationship.idObjectRelationship, true );
             break;
         }
       },

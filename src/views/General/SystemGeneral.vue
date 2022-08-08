@@ -101,6 +101,7 @@
           source : "detailGeneral",
           categorys : [],
           model : null,
+          objeRedirectId : ['general','process','object'],
 
           headers: [
             { text: "name", value: "name", sortable: false },
@@ -134,7 +135,7 @@
         detailItem(item){
           let url = '';
 
-          if(item.view == 'general' || item.view == 'object')
+          if(this.objeRedirectId.indexOf(item.view) > -1) 
             url += item.view+'/'+item.id;
           else
             url += item.view;

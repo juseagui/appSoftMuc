@@ -1,11 +1,26 @@
 <template>
+        <v-card class="container-tabs" elevation="1" >
+             <v-toolbar 
+                flat>
+                <v-app-bar-nav-icon></v-app-bar-nav-icon>
+                <v-toolbar-title>Relations</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn icon class="mr-3">
+                    <v-icon>search</v-icon>
+                </v-btn>
+                <v-btn color="secondary" dark class="mb-2" @click="listenerActionNewItemTabs()" >
+                    <v-icon small :left="true"> add</v-icon> {{ $t("viewGeneral.btnAdd") }}
+                </v-btn>
 
-    <v-container>
-        <v-card class="container-tabs" >
+            </v-toolbar>
+
+            <v-divider></v-divider>
+
             <v-tabs
             v-model="tabRelationship"
             centered 
-            slider-color="primary"
+            slider-color="colorTabBorder"
+            color="colorTabBorder"
             >
                 <v-tab 
                 v-for="(itemTab, index) in dataTabs" :key="itemTab.object_child"
@@ -19,25 +34,28 @@
                 {{itemTab.description}}
                 </v-tab>
             </v-tabs>
+
+            <template>
+                <v-tabs-items 
+                v-model="tabRelationship"
+                >
+                    <v-tab-item v-for="itemTab in dataTabs" :key="itemTab.object_child"
+                        transition= false
+                    >
+                        <TableGeneral :headers="dataTable.headersTableRelationship" :data="dataTable.dataTable" :dataPaginator="dataTable.dataPaginator"
+                                        :actions="dataTable.actionsTableRelationship" :itemsPerPage="dataTable.itemsPerPage" @listenerActionTable="listenerActionTableTabs" />
+                        
+                        <PaginatorGeneral :dataPaginator="dataTable.dataPaginator" @listenerActionPaginator="listenerActionPaginatorTabs" />
+
+                    </v-tab-item>
+                </v-tabs-items>
+            </template>
+
+
+
         </v-card>
 
-        <template>
-            <v-tabs-items 
-            v-model="tabRelationship"
-            >
-            <v-tab-item v-for="itemTab in dataTabs" :key="itemTab.object_child"
-                transition= false
-            >
-                <TableGeneral :headers="dataTable.headersTableRelationship" :data="dataTable.dataTable" :dataPaginator="dataTable.dataPaginator"
-                                :actions="dataTable.actionsTableRelationship" :itemsPerPage="dataTable.itemsPerPage" @listenerActionTable="listenerActionTableTabs" />
-                
-                <PaginatorGeneral :dataPaginator="dataTable.dataPaginator" @listenerActionPaginator="listenerActionPaginatorTabs" />
-
-            </v-tab-item>
-            
-            </v-tabs-items>
-        </template>
-    </v-container>
+      
   
 </template>
 
@@ -94,13 +112,24 @@
             },
 
             /*---------------------------------------------------
-            Name: listenerActionTableTabs
-            Description: Listen when pressing a button on the table to execute an action
+            Name: listenerActionPaginatorTabs
+            Description: 
             Alters component: PaginatorGeneral
             ---------------------------------------------------*/
             listenerActionPaginatorTabs( page ){
                 Object.assign(this.$data, this.$options.data.call(this));
                 this.$emit( 'listenerActionPaginatorTabs', page );  
+            },
+
+            /*---------------------------------------------------
+            Name: listenerActionNewItemTabs
+            Description: Creation of a new item in the relation object or child object
+            Alters component: 
+            ---------------------------------------------------*/
+            listenerActionNewItemTabs(){
+                console.log('entreeeeee pulse');
+                Object.assign(this.$data, this.$options.data.call(this));
+                this.$emit( 'listenerActionTableTabs', 'addItem', null );  
             }
 
         }

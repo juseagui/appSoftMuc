@@ -33,6 +33,17 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Object/ListObjects.vue')
   },
   {
+    path: '/process/:idObject',
+    name: 'Process',
+    meta: {
+      requiresAuth: true
+    },
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Process/ListProcess.vue')
+  },
+  {
     path: '/home/',
     name: 'Home',
     meta: {
@@ -76,6 +87,7 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/Object/DetailObject.vue')
   },
+  
   {
     path: '/system',
     name: 'SystemGeneral',

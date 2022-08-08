@@ -49,7 +49,7 @@ export default {
 
       //params for Toolbar
       headersDetail: [
-          { text: "Cant. registros", value: "", ico : "equalizer"}],
+          { text: "Cant. registros", value: "", ico : "equalizer", chip : false }],
       titleObject: "",
 
       //data for tables

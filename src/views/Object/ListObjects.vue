@@ -172,7 +172,7 @@ export default {
     },
 
   },
-   mixins: [apiMixins, processData]
+  mixins: [apiMixins, processData]
 };
 </script>
 

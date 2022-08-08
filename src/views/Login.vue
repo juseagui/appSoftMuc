@@ -11,10 +11,10 @@
                     <v-col cols="12" md="8" >
                       <v-card-text class="mt-12">
                         <h1
-                          class="text-center display-2 teal--text " color = "primary"
+                          class="text-center display-2 color-text-login"
                         >{{ $t('loginPage.welcome') }}</h1>
                         
-                        <h4 class="text-center mt-4">{{ $t('loginPage.msgEmailEnsure') }}</h4>
+                        <h4 class="text-center mt-4 color-text-login">{{ $t('loginPage.msgEmailEnsure') }}</h4>
                         <v-form @submit="login" lazy-validation ref="form" v-model="valid">
                           <v-text-field
                             v-model = "username"
@@ -50,7 +50,7 @@
                             </v-alert>
                           </transition>
 
-                          <h3 class="text-center mt-4">{{ $t('loginPage.ForgotPass') }} </h3>
+                          <h3 class="text-center mt-4 color-text-login">{{ $t('loginPage.ForgotPass') }} </h3>
 
                           <div class="text-center mt-3">
                             <!-- btn login -->
@@ -234,6 +234,22 @@ import {apiMixins} from '@/mixins/apiMixins.js'
 
   .theme--dark.v-btn.v-btn--disabled.v-btn--has-bg {
     background-color: rgba(0,0,0,.12) !important;
+  }
+
+  .color-text-login{
+    color: var(--v-primary-base);
+  }
+
+</style>
+
+<style>
+
+  .v-label{
+      font-family: Roboto !important;
+      font-size: 17px !important;
+      font-weight: 400 !important;
+      line-height: 20px !important;
+      color: var(--v-textInput-base) !important;
   }
 
 </style>

@@ -47,17 +47,34 @@
           <div class="text-overline-person">
             {{item.text}}
           </div>
-            <v-list-item-title class=" mb-1">
+
+          
+            <v-list-item-title v-if="item.chip == false" class=" mb-1">
               <v-icon dense>{{item.ico}}</v-icon>
             <b>{{item.value}}</b>
             </v-list-item-title>
+
+            <v-list-item-title v-else="item.chip == false" class=" mb-1">
+              <v-chip
+              color="primary"
+              pill
+              >
+              {{item.value}}
+                <v-icon>
+                  {{item.ico}}
+                </v-icon>
+            </v-chip>
+            </v-list-item-title>
+
+
+
           </v-list-item-content>
         </v-list-item>
         
       </v-card>
 
-        <v-btn color="primary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'ListGeneral'">
-          {{ $t("viewGeneral.btnAdd") }}
+        <v-btn color="secondary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'ListGeneral'">
+         <v-icon small :left="true">add</v-icon> {{ $t("viewGeneral.btnAdd") }}
         </v-btn>
 
       </v-toolbar>
@@ -75,14 +92,31 @@ export default {
    }
  },
  methods: {
+    /*---------------------------------------------------
+    Name: toggleModalViewAdd
+    Description: 
+    Alters component: 
+    ---------------------------------------------------*/
     toggleModalViewAdd() {
       Object.assign(this.$data, this.$options.data.call(this));
       this.$emit('listenerToolbar', 'add', null, false); 
     },
+
+    /*---------------------------------------------------
+    Name: toggleModalViewEdit
+    Description:
+    Alters component: 
+    ---------------------------------------------------*/
     toggleModalViewEdit() {
       Object.assign(this.$data, this.$options.data.call(this));
       this.$emit('listenerToolbar', 'edit', this.codeTitle, false, this.$route.params.idObject); 
     },
+
+    /*---------------------------------------------------
+    Name: toggleModalRelationship
+    Description:
+    Alters component: 
+    ---------------------------------------------------*/
     toggleModalRelationship() {      
       Object.assign(this.$data, this.$options.data.call(this));
       this.$emit( 'listenerToolbarRelationship' ); 

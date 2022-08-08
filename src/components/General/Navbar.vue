@@ -12,9 +12,9 @@
 
                 <v-list-item link class="px-2"
                 :to =" '/user/'+objeUser+'/userDetail/'+idUser"  >
-                    <v-list-item-avatar>
-                        <v-img src="https://media-exp1.licdn.com/dms/image/C4D03AQEJCS1rboiTug/profile-displayphoto-shrink_800_800/0/1632367456836?e=1658966400&v=beta&t=_rc2gnO0X45pRcdwE8XMcc2_fmBToGRY2BcQ3HcNeSY"></v-img>
-                    </v-list-item-avatar>
+                    <v-avatar class = "avatar-container" size="40" >
+                      <span class="text-avatar text-h6">{{initialName}}</span>
+                    </v-avatar>
                   
                     <v-list-item-content>
                         <v-list-item-title class="text-h6">
@@ -31,7 +31,7 @@
                 <v-list-item v-for="link in links"  
                 :key="link.id" 
                 router 
-                :to =" '/'+link.view ? (link.view == 'general' ? '/'+link.view+'/'+link.id : '/'+link.view ) : '/'+routeDefalt "
+                :to =" '/'+link.view ? ( objeRedirectId.indexOf(link.view) > -1 ? '/'+link.view+'/'+link.id : '/'+link.view ) : '/'+routeDefalt "
                 active-class="border">
                     <v-list-item-action>
                         <v-icon >{{link.icon}}</v-icon>
@@ -88,6 +88,7 @@ export default {
       routeDefalt: 'home',
       mini: true,
       links :[],
+      objeRedirectId : ['general','process'],
 
       //id user
       idUser : "",
@@ -104,8 +105,6 @@ export default {
     this.objeUser = "6";
 
     //Get objects Navbar
-    //let dataObjects = await this.getObjects();
-
     let permisions = this.$store.state.objectsPermissions;
     
     permisions.forEach(ele => {
@@ -113,8 +112,8 @@ export default {
         if(obj.visible == 1)
           this.links.push(obj)
       })
-
     });
+    
   },
   computed : {
       username(){
@@ -122,10 +121,28 @@ export default {
       },
       email(){
           return localStorage.getItem('email')
+      },
+      initialName(){
+        
+        let cadena = localStorage.getItem('last_name');
+        let arregloDeSubCadenas = cadena.split(" ");
+        let initialName = "";
+
+        for (let x=0;x<arregloDeSubCadenas.length;x++){
+          initialName += arregloDeSubCadenas[x].substring(0, 1).toUpperCase();
+        }
+        
+        return initialName;
       }
   },
   methods:{
     ...mapMutations(['mostrarLoading','ocultarLoading',]),
+
+    /*---------------------------------------------------
+    Name: logout
+    Description: Sign off
+    Alters component: 
+    ---------------------------------------------------*/
     async logout(){
         var payload = {
           user: localStorage.getItem('id')
@@ -148,9 +165,7 @@ export default {
           this.$router.push('/');
         })
         .catch(error=>{
-          var data = error.response.data;
           this.loading = false;
-          //console.log(data);
         })
         .finally(
           this.ocultarLoading()
@@ -163,10 +178,20 @@ export default {
 }
 
 
-
 </script>
 
 <style scoped>
 .border {
   border-left: 4px solid #2c3e50;
 }
+
+.avatar-container{
+  background-color: var(--v-colorAvatar-base) !important;
+  margin-right: 8px;
+}
+
+.text-avatar{
+  color: var(--v-colorTextAvatar-base) !important;
+}
+
+</style>
