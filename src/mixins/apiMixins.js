@@ -286,6 +286,62 @@ export const apiMixins = {
             return responseApi;  
         },
 
+        async getProcess( idProcess ){
+            
+            let responseApi = [];
+            await this.axios
+            .get( "/objects/procesess/"+idProcess )
+            .then((response) => {
+                responseApi.data = response.data;
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch((error) => {
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+                //console.log(data);
+            });
+            
+            return responseApi;  
+        },
+
+        async patchProcess(idProcess, data ){
+            
+            let responseApi = [];
+            await this.axios.patch('objects/procesess/'+idProcess+'/', data )
+            .then( response =>{
+                responseApi.data = [];
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch(error=>{
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+            })
+            
+            return responseApi;
+        },
+
+        async postProcess( data ){
+            
+            let responseApi = [];
+            await this.axios.post('objects/procesess/', data )
+            .then( response =>{
+                responseApi.data = [];
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch(error=>{
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+            })
+            
+            return responseApi;
+        },
+
         async AuthenticateUser(payload){
             
             let responseApi = []

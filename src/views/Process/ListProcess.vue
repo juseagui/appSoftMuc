@@ -14,7 +14,11 @@
             <PaginatorGeneral :dataPaginator="dataTableObject.dataPaginator" @listenerActionPaginator="listenerActionPaginator" />
 
             <!-- Create and update process flow -->
-            <FormProcess :openModal="visibilityModal"  @listenerModal="toggleModal" />
+            <FormProcess v-if="visibilityModal" :openModal="visibilityModal" :operationModel="operationModel" :dataProcess="dataProcess"  
+                @listenerModal="toggleModal" @listenerSaveProcess="saveModalProcess" @listenerUpsertActivity="UpsertActivity" />
+
+            <FormActivity :openModal="visibilityModalActivity" :data="ActivityData" :action="actionModalActivity"
+             @listenerModal="toggleModalActivity" @listenerSaveActivity="saveModalActivity" ></FormActivity>
 
         </v-container>
     </v-app>
@@ -27,6 +31,7 @@ import ToolbarObject from "@/components/Object/ToolbarObject";
 import TableGeneral from "@/components/General/TableGeneral";
 import PaginatorGeneral from "@/components/General/PaginatorGeneral";
 import FormProcess from "@/components/Process/FormProcess";
+import FormActivity from "@/components/Process/FormActivity";
 
 //import mixins
 import {apiMixins} from '@/mixins/apiMixins.js'
@@ -39,9 +44,15 @@ export default {
             
             source : "ListProcess",
 
-            //parameters for the modal of edition and creation of objects
+            //parameters for the modal of edition and creation of process
             visibilityModal: false,
             operationModel : { action: "", pk: "" },
+            dataProcess : {},
+
+            //parameters for the modal of edition and creation of Activity
+            visibilityModalActivity : false,
+            actionModalActivity : null,
+            ActivityData : {},
 
             //params for ToolbarObject
             propertyObject : { descriptionObject : "" , icon : "" },
@@ -58,8 +69,9 @@ export default {
                 dataTable : [],
                 dataTableCount : 0,
                 dataPaginator : { pageCount: 0 , pageIni: 1 },
-                itemsPerPage: 3
+                itemsPerPage: 10
             },
+
         };
     },
     async mounted() {
@@ -71,7 +83,8 @@ export default {
         ToolbarObject,
         TableGeneral,
         PaginatorGeneral,
-        FormProcess
+        FormProcess,
+        FormActivity
     },
     methods : {
 
@@ -121,8 +134,25 @@ export default {
         Description: Activate Modal the creation new item
         Alters component: ToolbarObject
         ---------------------------------------------------*/
-        toggleModal(action = "",pk="", save = false) {
-            console.log("🚀 ~ file: ListProcess.vue ~ line 109 ~ toggleModal ~ action", action)
+        async toggleModal(action = "",pk="", save = false) {
+            
+            this.operationModel.action = action;
+
+            if( action == 'edit' ){
+                this.operationModel.pk = pk;
+                await this.getProcessForm();
+            }else{
+                let processNew = {
+                    description : "",
+                    object_process: {
+                        id: ""
+                    },
+                    processActivity : [],
+
+                }
+                this.dataProcess = processNew;
+            }
+                
             this.visibilityModal = !this.visibilityModal;
         },
 
@@ -132,7 +162,6 @@ export default {
         Alters component: TableGeneral
         ---------------------------------------------------*/
         listenerActionTable( sendFunction, item ){
-            console.log("🚀 ~ file: ListProcess.vue ~ line 126 ~ listenerActionTable ~ sendFunction", sendFunction)
             switch (sendFunction) {
                 case 'detailItem':
                     this.toggleModal('edit',item.pk );
@@ -146,16 +175,104 @@ export default {
         Alters component: TableGeneral
         ---------------------------------------------------*/
         async listenerActionPaginator( page ){
-        let resultCountPage = this.calculateCountPage( page, this.dataTableObject.itemsPerPage );
+            let resultCountPage = this.calculateCountPage( page, this.dataTableObject.itemsPerPage );
 
-        let dataValueList = await this.getDataObjectList( this.$route.params.idObject, resultCountPage.ini, resultCountPage.limit );
+            let dataValueList = await this.getDataObjectList( this.$route.params.idObject, resultCountPage.ini, resultCountPage.limit );
 
-        if(dataValueList.code == 'OK'){
-            this.dataTableObject.dataPaginator.pageIni = page
-            this.dataTableObject.dataTable = dataValueList.data.data;
-            this.dataTableObject.dataPaginator.pageCount  = this.generateCounPaginator( this.dataTableObject.dataTableCount, this.dataTableObject.itemsPerPage );
-        }
+            if(dataValueList.code == 'OK'){
+                this.dataTableObject.dataPaginator.pageIni = page
+                this.dataTableObject.dataTable = dataValueList.data.data;
+                this.dataTableObject.dataPaginator.pageCount  = this.generateCounPaginator( this.dataTableObject.dataTableCount, this.dataTableObject.itemsPerPage );
+            }
         },
+
+
+        /*---------------------------------------------------
+        Name: saveModalProcess
+        Description: save process information
+        Alters component: FormProcess
+        ---------------------------------------------------*/
+        async saveModalProcess( data ) {
+            
+            let responsePatchProcess = {};
+            data.object_process = data.object_process.id;
+
+            if( this.operationModel.action == 'edit' ){
+                responsePatchProcess = await this.patchProcess( data.id  , data);
+            }else{
+                 responsePatchProcess = await this.postProcess( data );
+            }
+            
+
+            if( responsePatchProcess.code == 'OK' ){
+              this.visibilityModal = !this.visibilityModal;
+              this.listenerActionPaginator( this.dataTableObject.dataPaginator.pageIni );
+            }
+
+        },
+
+        /*---------------------------------------------------
+        Name: getProcessForm
+        Description:
+        Alters component: FormProcess
+        ---------------------------------------------------*/
+        async getProcessForm(){
+                
+            let dataPropertyProcess = await this.getProcess( this.operationModel.pk );
+            
+            if(dataPropertyProcess.code == 'OK'){
+                this.dataProcess = dataPropertyProcess.data.data;
+            }
+            
+        },
+
+         /*---------------------------------------------------
+        Name: UpsertActivity
+        Description: listen for an activity update and insert, open the modal
+        Alters component: FormProcess
+        ---------------------------------------------------*/
+        async UpsertActivity( activity, action ){
+           
+            this.actionModalActivity = action;
+
+            if( action == 'edit' )
+                this.ActivityData = activity;
+            else 
+                this.ActivityData = {}
+            
+            this.visibilityModalActivity = !this.visibilityModalActivity;
+                
+        },
+
+
+        /*---------------------------------------------------
+        Name: toggleModalActivity
+        Description: Activate Modal the creation and update new Activity
+        Alters component: FormActivity
+        ---------------------------------------------------*/
+        async toggleModalActivity() {
+
+            this.visibilityModalActivity = !this.visibilityModalActivity;
+        },
+
+        /*---------------------------------------------------
+        Name: saveModalActivity
+        Description: save Activity information
+        Alters component: FormProcess
+        ---------------------------------------------------*/
+        async saveModalActivity( data,  action ) {
+            
+            if(action == 'add'){
+                data.sort = this.dataProcess.processActivity.length + 1;
+                data.state = true;
+                data.process_activity = this.dataProcess.id;
+                this.dataProcess.processActivity.push( data );
+            }
+
+            this.visibilityModalActivity = !this.visibilityModalActivity;
+
+        },
+
     },
     mixins: [apiMixins, processData]
 }

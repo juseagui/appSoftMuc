@@ -127,7 +127,6 @@
             Alters component: 
             ---------------------------------------------------*/
             listenerActionNewItemTabs(){
-                console.log('entreeeeee pulse');
                 Object.assign(this.$data, this.$options.data.call(this));
                 this.$emit( 'listenerActionTableTabs', 'addItem', null );  
             }
