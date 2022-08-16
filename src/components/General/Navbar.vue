@@ -131,6 +131,9 @@ export default {
         for (let x=0;x<arregloDeSubCadenas.length;x++){
           initialName += arregloDeSubCadenas[x].substring(0, 1).toUpperCase();
         }
+
+        // set initialName in store
+        this.$store.dispatch("setInitialName", initialName );
         
         return initialName;
       }
@@ -160,7 +163,7 @@ export default {
           localStorage.removeItem('last_name' );
           localStorage.removeItem('email' );
           this.$store.dispatch("logout" );
-          this.$store.dispatch("getObjectsPermissions", [] );
+          this.$store.dispatch("setObjectsPermissions", [] );
           this.loading = false;
           this.$router.push('/');
         })

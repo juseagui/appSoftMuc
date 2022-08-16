@@ -11,6 +11,8 @@ export default new Vuex.Store({
     },
     dataLoginUser : {
       username: null,
+      initialName : null,
+      email : null,
       auth: false
     },
     objectsPermissions : []
@@ -23,27 +25,34 @@ export default new Vuex.Store({
     ocultarLoading(state){
       state.loading.estado = false
     },
-    login(state, username, token) {
+    login(state, userLogin, token) {
       state.dataLoginUser.auth = true;
-      state.dataLoginUser.username = username;
+      state.dataLoginUser.username = userLogin.username;
+      state.dataLoginUser.email = userLogin.email;
+    },
+    setInitialName(state, initialName ){
+      state.dataLoginUser.initialName = initialName;
     },
     logout(state) {
       state.dataLoginUser.auth = false;
       state.dataLoginUser.username = null;
     },
-    getObjectsPermissions(state, objectPropertys ){
+    setObjectsPermissions(state, objectPropertys ){
       state.objectsPermissions = objectPropertys;
     }
   },
   actions: {
-    login({ commit },username, token){
-      commit("login", username, token);
+    login({ commit },userLogin, token){
+      commit("login", userLogin, token);
+    },
+    setInitialName({ commit }, initialName ){
+      commit("setInitialName", initialName);
     },
     logout({ commit }){
       commit("logout");
     },
-    getObjectsPermissions({ commit },objectPropertys ){
-      commit("getObjectsPermissions", objectPropertys);
+    setObjectsPermissions({ commit },objectPropertys ){
+      commit("setObjectsPermissions", objectPropertys);
     }
   },
   modules: {

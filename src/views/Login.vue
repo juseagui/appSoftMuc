@@ -180,14 +180,14 @@ import {apiMixins} from '@/mixins/apiMixins.js'
         let response = await this.AuthenticateUser(payload);
         if(response.code == 'OK'){
           axios.defaults.headers.common['Authorization'] = 'Bearer '+response.data.token;
-          this.$store.dispatch("login", response.data.user.username );
+          this.$store.dispatch("login", response.data.user );
 
           //get property permissons objects
           let responseObjects = await this.getObjectsPermissions();
           
           if(responseObjects.code == 'OK'){
               //set objects permision store in vuex
-              this.$store.dispatch("getObjectsPermissions", responseObjects.data.data );
+              this.$store.dispatch("setObjectsPermissions", responseObjects.data.data );
           }
 
           this.loading = false;

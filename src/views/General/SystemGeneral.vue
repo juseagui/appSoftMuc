@@ -117,7 +117,6 @@
 
       }),
       mounted(){
-        debugger
         this.categorys = this.$store.state.objectsPermissions;
       },
       components: {

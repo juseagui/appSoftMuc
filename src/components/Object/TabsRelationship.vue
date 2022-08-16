@@ -3,7 +3,7 @@
              <v-toolbar 
                 flat>
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
-                <v-toolbar-title>Relations</v-toolbar-title>
+                <v-toolbar-title>Relaciones de modulos</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon class="mr-3">
                     <v-icon>search</v-icon>

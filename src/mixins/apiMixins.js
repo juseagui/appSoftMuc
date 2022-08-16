@@ -94,7 +94,6 @@ export const apiMixins = {
                 responseApi.data = [];
                 responseApi.code = 'ERROR';
                 responseApi.msg = error.response.data.data;
-                console.log(data);
             });
             
             return responseApi;    
@@ -108,7 +107,7 @@ export const apiMixins = {
             await this.axios
             .get( "/objects/field/" + pk + "?object="+ idObject )
             .then((response) => {
-                responseApi.data = response.data;
+                responseApi.data = response.data.data;
                 responseApi.code = 'OK';
                 responseApi.msg = "";
             })

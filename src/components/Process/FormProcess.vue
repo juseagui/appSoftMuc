@@ -159,7 +159,7 @@
     import {Drag,Drop,DropList} from "vue-easy-dnd";
     import {mapMutations} from "vuex";
 
-      //import mixins
+    //import mixins
     import {apiMixins} from '@/mixins/apiMixins.js'
 
     export default {

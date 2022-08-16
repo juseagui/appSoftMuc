@@ -140,7 +140,12 @@
                     </v-col>
                 </v-row>
             </v-container>
+
         </v-card-text>
+
+        <v-divider></v-divider>
+
+        <GroupActivity v-if="existProcess" :activities="activities" :historical="historical"></GroupActivity>
 
         <v-divider ></v-divider>
           <v-card-actions>
@@ -171,13 +176,14 @@
 <script>
   
   import {mapMutations} from "vuex";
+  import GroupActivity from "@/components/Process/GroupActivity";
   
   //import mixins
   import {apiMixins} from '@/mixins/apiMixins.js'
   import {processData} from '@/mixins/processData.js'
   
   export default {
-    //Creacion de propiedad para manipular la visibilidad del modal
+    //Creation of property to manipulate the visibility of the modal
     props: ['openModal','operationModel','idObject','source','isRelationship'],
     data: () => ({ 
       propsGroup: [],
@@ -192,22 +198,22 @@
       //rules in the fields
       rules: {
         number() {
-          return v=> /^[0-9]+$/.test(v) || (  (v == '' || v== undefined ) ? true : 'Only number' );
+          return v=> /^[0-9]+$/.test(v) || (  (v == '' || v== undefined ) ? true : 'Solo numeros' );
         },
 
         emailRules(){
-          return v => /.+@.+/.test(v) || 'E-mail must be valid';
+          return v => /.+@.+/.test(v) || 'E-mail debe ser valido';
         },
 
         required(name, required){
           if(required== 1)
-            return v => !!v ||  name+' is required';
+            return v => !!v ||  name+' es requerido';
           else
             return true
         },
 
         validateMax(max){
-          return v => (v || '').toString().length <= max || `A maximum of ${max} characters is allowed`
+          return v => (v || '').toString().length <= max || `Un maximo de ${max} caracteres son permitidos`
         },
 
       },
@@ -215,6 +221,11 @@
       //Vars for capture data form
       fieldsData : [],
       operationLocal : [],
+
+      //attributes for the component GroupActivity
+      activities : [],
+      historical : [],
+      existProcess : false,
 
     }),
     async beforeUpdate() {
@@ -225,6 +236,10 @@
             this.propsGroup = this.structureDataField( this.dataFieldObject );
             this.operationLocal = this.operationModel;
          }
+    },
+
+    components: {
+      GroupActivity
     },
     methods: {
         ...mapMutations(['mostrarLoading','ocultarLoading',]),
@@ -261,7 +276,7 @@
               })
             
             let responsePost = [];
-            this.mostrarLoading({ titulo : 'PRUEBA'});
+            this.mostrarLoading({ titulo : 'Guardando Registro'});
             await new Promise(resolve => setTimeout(resolve, 1000))
             
             //send data capture in the form - api
@@ -301,6 +316,13 @@
                   let dataPropertyList = await this.getpropertyFieldObject(this.idObject, 'capture', this.operationModel.action  , this.pk );
                   if(dataPropertyList.code == 'OK'){
                       this.dataFieldObject = dataPropertyList.data.data;
+
+                      //validate if object exist process 
+                      if( dataPropertyList.data.process.activities.length > 0 ){
+                        this.existProcess = true;
+                        this.activities = dataPropertyList.data.process.activities;
+                        this.historical = dataPropertyList.data.process.historical;
+                      }
                       this.open++;
                   }
             }
