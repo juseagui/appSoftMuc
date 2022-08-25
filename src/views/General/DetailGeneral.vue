@@ -25,6 +25,8 @@
       @listenerActionChangeTabs="listenerChangeTabs"
       @listenerActionTableTabs="listenerActionTable" />
 
+      <TabsProcess v-if="existProcess" :activities="activities" :historical="historical" :title="titleTabsProcess" ></TabsProcess>
+
     </v-container>
 </v-app>
 </template>
@@ -35,6 +37,9 @@ import ToolbarGeneral from "@/components/General/ToolbarGeneral";
 import FormGeneral from "@/components/General/FormGeneral";
 import TableDetail from "@/components/General/TableDetail";
 import TabsRelationship from "@/components/Object/TabsRelationship";
+import TabsProcess from "@/components/Process/TabsProcess";
+
+import i18n from '../../i18n';
 
 //import mixins
 import {apiMixins} from '@/mixins/apiMixins.js'
@@ -79,6 +84,12 @@ export default {
             itemsPerPage: 8
           },
 
+          //data TabsProcess
+          activities : [],
+          historical : [],
+          titleTabsProcess : "",
+          existProcess : false,
+
       }
   }, 
   async mounted() {
@@ -94,7 +105,8 @@ export default {
     FormGeneral,
     Navbar,
     TableDetail,
-    TabsRelationship
+    TabsRelationship,
+    TabsProcess
   },
   methods: {
 
@@ -116,6 +128,14 @@ export default {
           this.headersDetail[0].value = dataPropListValues.data['created_date'];
           this.headersDetail[1].value = dataPropListValues.data['modified_date'];
           this.headersDetail[2].value = "sergio Aguilera";
+
+          //validate if object exist process 
+          if( dataPropListValues.data.process.activities.length > 0 ){
+            this.existProcess = true;
+            this.titleTabsProcess = i18n.t('detailGeneral.titleTabsProcess');
+            this.activities = dataPropListValues.data.process.activities;
+            this.historical = dataPropListValues.data.process.historical;
+          }
 
         }
     },

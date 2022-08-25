@@ -5,7 +5,7 @@
       persistent
       max-width="1200px"
     >
-      <v-card >
+      <v-card>
         <v-form 
           v-model="valid"
           ref="form">
@@ -110,7 +110,7 @@
 
                          <!-- Validate if Type 5 -- Number -->
                          <v-text-field
-                          v-else-if = "item.type == '5'"
+                          v-else-if = "item.type == '5' && item.type_relation != 2"
                           :label="item.description+ (item.required == 1  ?' *' : '')"
                           :counter=item.number_charac
                           :rules="[ rules.number(), rules.required(item.description, item.required), rules.validateMax(item.number_charac) ] "
@@ -121,6 +121,24 @@
                           v-model="item.value">
                         </v-text-field>
 
+                        <!-- Validate if Type 5 -- Number and relational -->
+                        <v-select
+                          v-else-if = "item.type == '5' && item.type_relation == 2  "
+                          :label="item.description+ (item.required == 1  ?' *' : '')"
+                          :rules ="[rules.required(item.description,  item.required)] "
+                          :hint="item.hint == '' ? false : item.hint"
+                          :name = item.name
+                          :readonly="true"
+                          :disabled="validateIsEdit( item.edit, item.name, item.type )"
+                          append-outer-icon="content_paste_search"
+                          @click:append-outer="searchObjectRecord( item, item.name )"
+                          :items="[ (item.value ? ( item.value.description ? item.value : {} ) : {} ) ]"
+                          item-text="description"
+                          item-value="code"
+                          class="container-relational-select"
+                          v-model="item.value"
+                          return-object>
+                      </v-select>
 
                         <!-- Validate if Type 7 -- list -->
                          <v-select
@@ -136,33 +154,42 @@
                           :disabled="validateIsEdit( item.edit, item.name, item.type )"
                           return-object
                         ></v-select>
+                        
 
                     </v-col>
                 </v-row>
             </v-container>
 
-        </v-card-text>
+          </v-card-text>
+          
+          <v-divider v-if="existProcess"></v-divider>
 
-        <v-divider></v-divider>
+          <GroupActivity v-if="existProcess" :activities="activities" :historical="historical" :historicalSend="objeHistoricalSend"></GroupActivity>
 
-        <GroupActivity v-if="existProcess" :activities="activities" :historical="historical"></GroupActivity>
+          <FormSearchRecord :dataTableSearch="dataTableSearch" 
+          :title="titleFormSearch" 
+          :openModalSearch="openModalSearch"
+          :codeInput = "codeInput"
+          @listenerModalFormSearchRecord="listenerModalFormSearchRecord" 
+          @listenerChangePageFormSearchRecord ="listenerChangePageFormSearchRecord"
+          ></FormSearchRecord>
 
-        <v-divider ></v-divider>
+          <v-divider class="mt-4" ></v-divider>
           <v-card-actions>
-            <small>* indicates required field</small>
+            <small>{{$t("FormGeneral.msgRequiredModal")}}</small>
             <v-spacer></v-spacer>
             <v-btn
               color="primary darken-1"
               text
               @click="close()"
-            > Close
+            > {{$t("FormGeneral.btnClose")}}
             </v-btn>
             <v-btn
               color="primary darken-1"
               text
               :disabled="!valid"
               @click="validate()"
-            > Save
+            > {{$t("FormGeneral.btnSave")}}
             </v-btn>
           </v-card-actions>
         </v-form>
@@ -177,10 +204,12 @@
   
   import {mapMutations} from "vuex";
   import GroupActivity from "@/components/Process/GroupActivity";
+  import FormSearchRecord from "@/components/General/FormSearchRecord";
   
   //import mixins
   import {apiMixins} from '@/mixins/apiMixins.js'
   import {processData} from '@/mixins/processData.js'
+
   
   export default {
     //Creation of property to manipulate the visibility of the modal
@@ -225,7 +254,27 @@
       //attributes for the component GroupActivity
       activities : [],
       historical : [],
+      objeHistoricalSend : {
+        description : "",
+        id_record : null,
+        object_historical : null,
+        process_historical : null,
+        activity_historical : null
+      },
       existProcess : false,
+
+      //data for modal select item relation in object
+      dataTableSearch : {
+        idObject : 0,
+        headersTable: [],
+        dataTable : [],
+        dataTableCount : 0,
+        dataPaginator : { pageCount: 0 , pageIni: 1 },
+        itemsPerPage: 10
+      },
+      openModalSearch : false,
+      titleFormSearch : "",
+      codeInput : "",
 
     }),
     async beforeUpdate() {
@@ -237,10 +286,11 @@
             this.operationLocal = this.operationModel;
          }
     },
-
     components: {
-      GroupActivity
-    },
+    GroupActivity,
+    FormSearchRecord,
+    FormSearchRecord
+},
     methods: {
         ...mapMutations(['mostrarLoading','ocultarLoading',]),
 
@@ -257,7 +307,7 @@
 
         /*---------------------------------------------------
         Name: validate
-        Description: Validate fields and request post
+        Description: Validate fields and request post and historical record
         Alters component:
         ---------------------------------------------------*/
         async validate (){
@@ -268,8 +318,8 @@
             let propsFieldGroup = this.propsGroup;
             propsFieldGroup.forEach( group => { 
               group.fields.forEach( field => {
-                if(field.type == '7')
-                  fieldsDataPost[field.name] = field.value?.code;
+                if( (field.type == '7') || (field.type == '5' && field.type_relation == '2' ) )
+                  fieldsDataPost[field.name] = ( field.value?.description ? field.value?.code : null );
                 else
                   fieldsDataPost[field.name] = field.value == '' ? null : field.value;
               }) 
@@ -298,6 +348,18 @@
             }
 
             if( responsePost.code == 'OK' ){
+              //validate if exist process
+
+              if(this.existProcess && this.source != "ListObjects" ){
+                this.objeHistoricalSend.id_record =  this.operationLocal.action == 'add' ? responsePost.data.id  : this.operationLocal.pk;
+                this.objeHistoricalSend.object_historical = this.idObject;
+                this.objeHistoricalSend.process_historical = this.activities[0].process_activity;
+
+                //Send Historial
+                await this.postHistorical( this.objeHistoricalSend );
+              
+              }
+
               this.close(true);
             }
             this.ocultarLoading()
@@ -352,7 +414,105 @@
             }
         
           }
+        },
+
+        /*---------------------------------------------------
+        Name: searchObjectRecord
+        Description:
+        Alters component: FormSearchRecord
+        ---------------------------------------------------*/
+        async searchObjectRecord( item , codeInput ){
+        
+          let dataObject = await this.getDataObjectList( item.object_relationship?.id , 0, this.dataTableSearch.itemsPerPage );
+
+          //reset object
+          this.dataTableSearch = {
+            idObject : 0,
+            headersTable: [],
+            dataTable : [],
+            dataTableCount : 0,
+            dataPaginator : { pageCount: 0 , pageIni: 1 },
+            itemsPerPage: 10
+          };
+
+          if(dataObject.code == 'OK'){
+
+            this.dataTableSearch.dataTable = dataObject.data.data;
+            this.dataTableSearch.dataTableCount = dataObject.data.count;
+            this.dataTableSearch.idObject = item.object_relationship?.id;
+            this.dataTableSearch.dataPaginator.pageCount = this.generateCounPaginator( this.dataTableSearch.dataTableCount, this.dataTableSearch.itemsPerPage );
+
+             //Get field for list
+            let dataPropertyList = await this.getpropertyFieldObject( item.object_relationship?.id , 'visible' );
+            
+            if(dataPropertyList.code == 'OK'){
+              this.titleFormSearch = dataPropertyList.data.data[0].object_field.name;
+              var arrTempHeader = [];
+              var jsonDataHeader = {};
+
+              dataPropertyList.data.data.forEach((element) => {
+                jsonDataHeader = {
+                  text: element.description,
+                  value: element.name,
+                };
+                arrTempHeader.push(jsonDataHeader);
+              });
+
+              this.dataTableSearch.headersTable = arrTempHeader.concat(this.dataTableSearch.headersTable);
+
+              this.codeInput = codeInput;
+              this.openModalSearch = true;
+            }
+          }
+
+          
+        },
+
+        /*---------------------------------------------------
+        Name: listenerModalFormSearchRecord
+        Description:
+        Alters component: FormSearchRecord
+        ---------------------------------------------------*/
+        listenerModalFormSearchRecord( save = false, data, codeInput  ){
+
+          let itemNew = {};
+
+          if(save){
+            this.propsGroup.some( function(group) {           
+            itemNew = group.fields.find( ele => ele.name === codeInput );
+            if(itemNew)
+              return true;
+            });
+
+            itemNew.value = {
+              'code' : data.id.toString(),
+              'description' : data[ itemNew.object_relationship.representation ]
+            };
+
+          }
+
+          this.openModalSearch = false;
+        },
+
+        /*---------------------------------------------------
+          Name: listenerChangePageFormSearchRecord
+          Description:
+          Alters component: FormSearchRecord
+          ---------------------------------------------------*/
+        async listenerChangePageFormSearchRecord( page ){
+
+          let resultCountPage = this.calculateCountPage( page, this.dataTableSearch.itemsPerPage );
+          let dataObject = await this.getDataObjectList( this.dataTableSearch.idObject, resultCountPage.ini, resultCountPage.limit );
+
+          if( dataObject.code == 'OK' ){
+            this.dataTableSearch.dataPaginator.pageIni = page
+            this.dataTableSearch.dataTable = dataObject.data.data;
+            this.dataTableSearch.dataPaginator.pageCount  = this.generateCounPaginator( this.dataTableSearch.dataTableCount, this.dataTableSearch.itemsPerPage );
+          }
+          console.log("🚀 ~ file: FormGeneral.vue ~ line 504 ~ listenerChangePageFormSearchRecord ~ resultCountPage", resultCountPage)
+
         }
+
     },
      mixins: [apiMixins, processData]
     
@@ -360,3 +520,10 @@
   
 </script>
 
+
+<style>
+.v-application--is-ltr .container-relational-select .v-input__append-inner{
+  display: none !important;
+}
+
+</style>

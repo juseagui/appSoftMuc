@@ -2,7 +2,7 @@
     <v-toolbar flat class="toolbar-margin-person">
         
       <v-toolbar-title>
-        <b>{{ titleObject }}</b>
+        <b>{{ $t("ToolbarSystem.titleToolbar") }}</b>
     
       </v-toolbar-title>
       
@@ -53,7 +53,6 @@ export default {
  name: "toolbarSystem",
  data() {
    return {
-     titleObject : "System",
      headersDetail : []
    }
  },

@@ -47,13 +47,14 @@
             <v-tab key="One">
               Datos de Usuario
             </v-tab>
+            <!--
             <v-tab key="two">
               Calendario
             </v-tab>
             <v-tab key="Three">
               Notificaciones
             </v-tab>
-           
+           -->
           </v-tabs>
           
         </template>
@@ -79,7 +80,7 @@
           <TableDetail :dataField="propsGroup"  />
 
           <!-- Componente modal para creación y edicion de registros -->
-          <FormGeneral :openModal="visibilityModal" :operationModel="operationModel"
+          <FormGeneral :openModal="visibilityModal" :operationModel="operationModel" :idObject="actualObjectForm" :source="source" :isRelationship="false"
           @listenerModal="toggleModal" />
           
         </v-card>
@@ -137,10 +138,11 @@ export default {
       visibilityModal: false,
       operationModel : { action: "", pk: "" },
       headersDetail: [
-        {text: "Fecha de Creación", value: "", ico : "event_available"},
-        {text: "Fecha de Modificación", value: "", ico : "restore"},
-        {text: "creador", value: "", ico : "person"}
+        {text: "Fecha de Creación", value: "", ico : "event_available", chip : false},
+        {text: "Fecha de Modificación", value: "", ico : "restore", chip : false},
+        {text: "creador", value: "", ico : "person", chip : true}
       ],
+      actualObjectForm : this.$route.params.idObject,
 
       //data component
       emailUser : "",

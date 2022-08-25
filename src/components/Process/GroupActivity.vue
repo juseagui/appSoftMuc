@@ -9,7 +9,7 @@
                 type="info"
                 text
                 >
-                Gestión de la oportunidad
+                {{ $t("GroupActivity.titleGroupActivity") }}
                 </v-alert>
             </v-col>
         </v-row>
@@ -19,10 +19,18 @@
                 <template v-for="(activity, index) in activities">
                     <v-stepper-step :step="activity.sort" 
                     :complete="activityCurrent.sort >= activity.sort ? true : false"
-                    :color=" (activityCurrent.sort == undefined ? 0 : activityCurrent.sort ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort) 
+                    :color=" (activityCurrent.sort == undefined ? 0 : (activityCurrent.sort + 1) ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort)
                         ? 'chipColorPrimary' : 'primary' " 
+                    :editable="(activityCurrent.sort == undefined ? 0 : (activityCurrent.sort + 1) ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort)
+                     ? true : 
+                     (activityCurrent.sort == undefined ? 0 : (activityCurrent.sort) ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort) 
+                     ? true : false"
+                     @click="listenerStepSelectEdit(activity)"
                     >
                         {{activity.description}}
+                        <small v-if="(activityCurrent.sort == undefined ? 1 : (activityCurrent.sort) ) ==  ( activity.sort )
+                            ? true : false " > {{ $t("TabsProcess.msgActualActivity") }} </small>
+
                     </v-stepper-step>
                     <v-divider v-if="index !== activities.length - 1" :key="index"></v-divider>
                 </template>
@@ -37,23 +45,23 @@
         <v-container>
             <v-row >
                 <v-col>
-                    <v-subheader>Progreso Actual</v-subheader>
+                    <v-subheader>{{ $t("GroupActivity.msgSubHeaderProgress") }}</v-subheader>
                     <v-row >
                         <v-col class="d-flex justify-center">
                             <v-progress-circular
                             :rotate="360"
                             :size="110"
                             :width="15"
-                            :value="calculateProgess"
-                            :color="calculatecolorProgess"
+                            :value="calculateProgress"
+                            :color="calculatecolorProgress"
                             >
-                            {{calculateProgess}}
+                            {{calculateProgress}}
                             </v-progress-circular>
                         </v-col>
                     </v-row>
                 </v-col>
                 <v-col>
-                    <v-subheader>Responsable</v-subheader>
+                    <v-subheader>{{ $t("GroupActivity.msgSubHeaderUser") }}</v-subheader>
                     <v-row>
                         <v-col>
                             <v-avatar class = "avatar-container" size="45" >
@@ -82,7 +90,7 @@
                     label='Registro de actividad *'
                     :rules ="[rules.required('Registro de actividad',1),rules.validateMax(1500)]"
                     name = 'activityLog'
-                    v-model="activityLog"
+                    v-model="historicalSend.description"
                 />
             </v-row>
 
@@ -93,7 +101,7 @@
     </template>
 <script>
     export default {
-        props: ['activities','historical'],
+        props: ['activities','historical','historicalSend'],
         data: () => ({
             activityLog : "",
             initialName : "",
@@ -115,13 +123,12 @@
         }),
 
         computed : {
-            calculateProgess(){
+            calculateProgress(){
                 let lengthActivities =  this.activities.length;
-                debugger
                 let progress = (100 / lengthActivities ) * ( this.activityCurrent.sort == undefined ? 0 : this.activityCurrent.sort ) ?? 0 ;
-                return progress+'%';
+                return progress.toFixed(1)+'%';
             },
-            calculatecolorProgess(){
+            calculatecolorProgress(){
                 let lengthActivities =  this.activities.length;
                 let progress = (100 / lengthActivities ) * ( this.activityCurrent.sort == undefined ? 0 : this.activityCurrent.sort ) ?? 0 ;
 
@@ -147,15 +154,29 @@
             this.username = this.$store.state.dataLoginUser.username;
             this.emailUser = this.$store.state.dataLoginUser.email;
 
-            if(this.historical.length > 0)
+            let idActivityNext = this.activities[0].id;
+            
+            if(this.historical.length > 0){
                 this.activityCurrent = this.activities.find( element => element.id === this.historical[0].activity_historical );
-           
+                idActivityNext = this.activities.find( element => element.sort === (this.activityCurrent.sort == undefined ? 0 : this.activityCurrent.sort ) + 1 )?.id;
+            }
+
+            this.historicalSend.activity_historical = idActivityNext;
         },
 
-        methods: {
+        methods : {
+
+            /*---------------------------------------------------
+            Name: listenerStepSelectEdit
+            Description: 
+            Alters component: 
+            ---------------------------------------------------*/
+            listenerStepSelectEdit( activity ){
+                this.historicalSend.activity_historical = activity.id;
+            },
 
         }
-
+        
     }
 
 </script>

@@ -1,12 +1,11 @@
 <template>
-  <v-app id="inspire">
-    <v-content>
+  <v-app>
+    <v-main>
       <v-container class="fill-height" fluid>
         <v-row  justify="center">
           <v-col cols="12" sm="8" md="8">
             <v-card class="elevation-12">
-              <v-window v-model="step">
-                <v-window-item :value="1">
+             
                   <v-row  >
                     <v-col cols="12" md="8" >
                       <v-card-text class="mt-12">
@@ -68,71 +67,19 @@
                         > {{ $t('loginPage.msgWelcome') }}</h5>
                       </v-card-text>
                       <div class="text-center">
-                        <v-btn rounded outlined dark @click="step++">{{ $t('loginPage.signUp') }}</v-btn>
+                        <!-- <v-btn rounded outlined dark @click="step++">{{ $t('loginPage.signUp') }}</v-btn>-->
                       </div>
                     </v-col>
                   </v-row>
-                </v-window-item>
-                <v-window-item :value="2">
-                  <v-row class="fill-height">
-                    <v-col cols="12" md="4" class="primary">
-                      <v-card-text class="white--text mt-12">
-                        <h1 class="text-center display-1">{{ $t('registerPage.welcome') }}</h1>
-                        <h5
-                          class="text-center"
-                        >{{ $t('registerPage.msgWelcome') }}</h5>
-                      </v-card-text>
-                      <div class="text-center">
-                        <v-btn rounded outlined dark @click="step--">{{ $t('registerPage.welcome') }}</v-btn>
-                      </div>
-                    </v-col>
-
-                    <v-col cols="12" md="8">
-                      <v-card-text class="mt-12">
-                        <h1 class="text-center display-2 teal--text" color = "primary">Create Account</h1>
-                      
-                        <h4 class="text-center mt-4">{{ $t('registerPage.msgWelcome') }}</h4>
-                        <v-form>
-                          <v-text-field
-                            label="Name"
-                            name="Name"
-                            prepend-icon="person"
-                            type="text"
-                            color="secondary"
-                          />
-                          <v-text-field
-                            label="Email"
-                            name="Email"
-                            prepend-icon="email"
-                            type="text"
-                            color="secondary"
-                          />
-
-                          <v-text-field
-                            id="password"
-                            label="Password"
-                            name="password"
-                            prepend-icon="lock"
-                            type="password"
-                            color="secondary"
-                          />
-                        </v-form>
-                        
-
-                      </v-card-text>
-
-                      <div class="text-center mt-n5">
-                        <v-btn rounded color="primary" class = "btn_person_login" @click="login"  dark>{{ $t('registerPage.signUp') }}</v-btn>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-window-item>
-              </v-window>
+              
             </v-card>
           </v-col>
         </v-row>
+
+         
+
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
@@ -251,5 +198,6 @@ import {apiMixins} from '@/mixins/apiMixins.js'
       line-height: 20px !important;
       color: var(--v-textInput-base) !important;
   }
+
 
 </style>

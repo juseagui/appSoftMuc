@@ -2,12 +2,19 @@
 
   <v-container>
     <v-data-table
+      v-model="recordSelected"
       :headers="headers"
       :items="data"
       :items-per-page="itemsPerPage"
       :page.sync="dataPaginator.pageIni"
       hide-default-header
       hide-default-footer
+      @input="listenerActionTable('selected', null)"
+      :show-select=" (sourceParent == 'FormSearchRecord') ? true : false "
+      :single-select=" (sourceParent == 'FormSearchRecord') ? true : false "
+
+      :loading="(data.length >= 0 ) ? (headers.length > 0) ? false : true : true"
+      loading-text="Cargando información... Por favor esperar"
       class="elevation-1"
     >
       <template v-slot:header="{ props: { headers } }">
@@ -47,7 +54,7 @@
     props: ['headers','data','actions','itemsPerPage','dataPaginator','sourceParent'],
     data: () => ({ 
       source : "TableGeneral",
-
+      recordSelected : []
     }),
     methods: {
 
@@ -57,7 +64,12 @@
       Alters component: 
       ---------------------------------------------------*/
       listenerActionTable( sendFunction, item ){
-        Object.assign(this.$data, this.$options.data.call(this));
+        
+        if( !item && sendFunction == 'selected')
+          item = this.recordSelected[0];
+        else
+          Object.assign(this.$data, this.$options.data.call(this));
+        
         this.$emit( 'listenerActionTable', sendFunction, item );  
       },
 

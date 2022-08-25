@@ -137,14 +137,14 @@
                         color="primary darken-1"
                         text
                         @click="close()"
-                        > Close
+                        > {{$t("FormGeneral.btnClose")}}
                     </v-btn>
                     <v-btn
                         color="primary darken-1"
                         :disabled ="disabledButtonSave"
                         text
                         @click="validate()"
-                        > Save
+                        > {{$t("FormGeneral.btnSave")}}
                     </v-btn>
                 </v-card-actions>
             </v-form>

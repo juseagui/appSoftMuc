@@ -49,7 +49,7 @@
               <div  class="pa-2">
                     <v-btn class="primary--text" color = "white" to ="/system"   v-if="!mini" block>
                         <v-icon >settings</v-icon>
-                        System
+                        {{ $t("navBar.btnSystem") }}
                     </v-btn>
                     <v-btn color = "white"  to ="/system"  class="primary--text pa-0"   ico v-else block small>
                         <v-icon >settings</v-icon>
@@ -59,7 +59,7 @@
               <v-divider></v-divider>
                 <div  class="pa-2">
                     <v-btn class="primary--text" color = "white" @click = "logout" :loading="loading"  v-if="!mini" block>
-                        Logout
+                        {{ $t("navBar.btnLogout") }}
                     </v-btn>
                     <v-btn color = "white"  @click = "logout" class="primary--text pa-0" :loading="loading"  ico v-else block small>
                         <v-icon >logout</v-icon>

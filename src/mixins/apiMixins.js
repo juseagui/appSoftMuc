@@ -175,7 +175,7 @@ export const apiMixins = {
             let responseApi = [];
             await this.axios.post('objects/data/?object='+idObject, data )
             .then( response =>{
-                responseApi.data = [];
+                responseApi.data = response.data.data;
                 responseApi.code = 'OK';
                 responseApi.msg = "";
             })
@@ -327,6 +327,24 @@ export const apiMixins = {
             
             let responseApi = [];
             await this.axios.post('objects/procesess/', data )
+            .then( response =>{
+                responseApi.data = [];
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch(error=>{
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+            })
+            
+            return responseApi;
+        },
+
+        async postHistorical( data ){
+            
+            let responseApi = [];
+            await this.axios.post('objects/historical/', data )
             .then( response =>{
                 responseApi.data = [];
                 responseApi.code = 'OK';

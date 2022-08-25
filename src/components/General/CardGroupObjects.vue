@@ -31,9 +31,9 @@
         tile
         size="60"
       >
-      <v-icon size="50" color="primary">
-             {{Icon}}
-            </v-icon>
+        <v-icon size="50" color="primary">
+          {{Icon}}
+        </v-icon>
       </v-list-item-avatar>
     </v-list-item>
 
@@ -43,10 +43,6 @@
 
 
 <script>
-
-import axios from "axios";
-import {mapMutations} from "vuex";
-import i18n from '../../i18n';
 
 //import mixins
 import {apiMixins} from '@/mixins/apiMixins.js'
@@ -58,7 +54,11 @@ export default {
 
    }),
    methods: {
-
+        /*---------------------------------------------------
+          Name: detailItem
+          Description:
+          Alters component:
+          ---------------------------------------------------*/
         detailItem(IdCategory){
             //Send parameters emit component father
             Object.assign(this.$data, this.$options.data.call(this));
