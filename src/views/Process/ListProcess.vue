@@ -145,10 +145,10 @@ export default {
                 let processNew = {
                     description : "",
                     object_process: {
-                        id: ""
+                        id: "",
+                        name : ""
                     },
                     processActivity : [],
-
                 }
                 this.dataProcess = processNew;
             }
@@ -219,6 +219,7 @@ export default {
         async getProcessForm(){
                 
             let dataPropertyProcess = await this.getProcess( this.operationModel.pk );
+            console.log("🚀 ~ file: ListProcess.vue ~ line 222 ~ getProcessForm ~ dataPropertyProcess", dataPropertyProcess)
             
             if(dataPropertyProcess.code == 'OK'){
                 this.dataProcess = dataPropertyProcess.data.data;

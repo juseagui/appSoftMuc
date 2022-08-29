@@ -55,7 +55,25 @@ export const processData = {
             }
             
             return { ini, limit }
+        },
+
+        structureDataFiltering( data ){
+            let PropertysFilter = []
+            data.forEach( item => {
+                PropertysFilter.push({
+                    name : item.name,
+                    description : item.description,
+                    type : item.type,
+                    filter : {
+                        value : null,
+                        operation : null
+                    }
+                })
+            })
+            return PropertysFilter;
         }
+            
+
     }
 
 };

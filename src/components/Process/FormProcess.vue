@@ -19,7 +19,7 @@
                     color="primary"
                     transition = "expand-x-transition"
                     elevation="0">
-                        <span class="text-h6" > Información principal </span>
+                        <span class="text-h6" > {{ $t("FormProcess.titleActivities") }} </span>
                     </v-alert>
 
                     <v-container>
@@ -37,13 +37,21 @@
 
                             <v-col  cols="12" sm="8" md="6" >
 
-                                <v-text-field
-                                    label="Modulo donde aplica el proceso "
-                                    counter="50"
-                                    name = "description"
-                                    v-model="dataProcess.object_process.id"
-                                    required>
-                                </v-text-field>
+                                <v-select
+                                label="Modulo donde aplica el proceso "
+                                name = "idObject"
+                                :readonly="true"
+                                append-outer-icon="content_paste_search"
+                                @click:append-outer="searchObjectRecord( dataProcess.object_process, 'idObject' )"
+                                :items="[ dataProcess.object_process ? dataProcess.object_process : {} ]"
+                                item-text="name"
+                                item-value="id"
+                                class="container-relational-select"
+                                v-model="dataProcess.object_process.id"
+                                return-object>
+                            </v-select>
+
+
                             </v-col>
                         </v-row>
 
@@ -61,11 +69,11 @@
                     color="primary"
                     transition = "expand-x-transition"
                     elevation="0">
-                        <span class="text-h6" > Definición de Actividades</span>
+                        <span class="text-h6" > {{ $t("FormProcess.titleActivities") }} </span>
                     </v-alert>
 
                     <template>
-                        <v-row align-content="stretch">
+                        <v-row >
                             <v-col>
                                 <v-list three-line class="list-drag">
                                     <drop-list :items="dataProcess.processActivity" @reorder="$event.apply(dataProcess.processActivity)"  mode="cut">
@@ -86,7 +94,7 @@
                                                             <v-icon  left>
                                                                 edit
                                                             </v-icon>
-                                                            Editar Actividad
+                                                            {{ $t("FormProcess.btnEditActivity") }}
                                                         </v-chip>
                                                 </v-list-item>
                                                 <v-divider/>
@@ -118,8 +126,8 @@
                                         </v-list-item-avatar>
 
                                         <v-list-item-content >
-                                            <v-list-item-title> Nueva Actividad </v-list-item-title>
-                                            <v-list-item-subtitle > Presionar para agregar una nueva actividad </v-list-item-subtitle>
+                                            <v-list-item-title> {{ $t("FormProcess.btnNewActivity") }} </v-list-item-title>
+                                            <v-list-item-subtitle > {{ $t("FormProcess.subtitleBtnNewActivity") }} </v-list-item-subtitle>
                                         </v-list-item-content>
                                         
                                     </v-list-item>
@@ -149,18 +157,29 @@
                 </v-card-actions>
             </v-form>
         </v-card>
+
+         <FormSearchRecord :dataTableSearch="dataTableSearch" 
+        :title="titleFormSearch" 
+        :openModalSearch="openModalSearch"
+        :codeInput = "codeInput"
+        @listenerModalFormSearchRecord="listenerModalFormSearchRecord" 
+        @listenerChangePageFormSearchRecord ="listenerChangePageFormSearchRecord"
+        ></FormSearchRecord>
+
         </v-dialog>
     </v-row>
 </template>
 
 
 <script>
-
+    
+    import FormSearchRecord from "@/components/General/FormSearchRecord";
     import {Drag,Drop,DropList} from "vue-easy-dnd";
     import {mapMutations} from "vuex";
 
     //import mixins
-    import {apiMixins} from '@/mixins/apiMixins.js'
+    import {apiMixins} from '@/mixins/apiMixins.js';
+    import {processData} from '@/mixins/processData.js';
 
     export default {
         
@@ -169,12 +188,26 @@
             valid : false,
             //Disabled button Save in form
             disabledButtonSave : false,
+
+            //data for modal select item relation in object
+            dataTableSearch : {
+                idObject : 0,
+                headersTable: [],
+                dataTable : [],
+                dataTableCount : 0,
+                dataPaginator : { pageCount: 0 , pageIni: 1 },
+                itemsPerPage: 10
+            },
+            openModalSearch : false,
+            titleFormSearch : "",
+            codeInput : "",
         }),
 
         components: {
             Drag,
             Drop,
-            DropList
+            DropList,
+            FormSearchRecord
         },
 
         watch: {
@@ -191,6 +224,91 @@
             
         methods: {
             ...mapMutations(['mostrarLoading','ocultarLoading',]),
+
+            /*---------------------------------------------------
+            Name: searchObjectRecord
+            Description:
+            Alters component: FormSearchRecord
+            ---------------------------------------------------*/
+            async searchObjectRecord( item , codeInput ){
+            
+                let dataObject = await this.getDataObjectList( 1, 0, this.dataTableSearch.itemsPerPage );
+
+                //reset object
+                this.dataTableSearch = {
+                    idObject : 0,
+                    headersTable: [],
+                    dataTable : [],
+                    dataTableCount : 0,
+                    dataPaginator : { pageCount: 0 , pageIni: 1 },
+                    itemsPerPage: 10
+                };
+
+                if(dataObject.code == 'OK'){
+
+                    this.dataTableSearch.dataTable = dataObject.data.data;
+                    this.dataTableSearch.dataTableCount = dataObject.data.count;
+                    this.dataTableSearch.idObject = 1;
+                    this.dataTableSearch.dataPaginator.pageCount = this.generateCounPaginator( this.dataTableSearch.dataTableCount, this.dataTableSearch.itemsPerPage );
+
+                    //Get field for list
+                    let dataPropertyList = await this.getpropertyFieldObject( 1 , 'visible' );
+                    
+                    if(dataPropertyList.code == 'OK'){
+                        this.titleFormSearch = dataPropertyList.data.data[0].object_field.name;
+                        var arrTempHeader = [];
+                        var jsonDataHeader = {};
+
+                        dataPropertyList.data.data.forEach((element) => {
+                            jsonDataHeader = {
+                            text: element.description,
+                            value: element.name,
+                            };
+                            arrTempHeader.push(jsonDataHeader);
+                        });
+
+                        this.dataTableSearch.headersTable = arrTempHeader.concat(this.dataTableSearch.headersTable);
+
+                        this.codeInput = codeInput;
+                        this.openModalSearch = true;
+                    }
+                }
+            },
+
+            /*---------------------------------------------------
+            Name: listenerModalFormSearchRecord
+            Description:
+            Alters component: FormSearchRecord
+            ---------------------------------------------------*/
+            listenerModalFormSearchRecord( save = false, data, codeInput  ){
+                
+                if(save){
+                    this.dataProcess.object_process.id = data.id;
+                    this.dataProcess.object_process.model = data.model;
+                    this.dataProcess.object_process.name = data.name;
+                    this.dataProcess.object_process.description = null;
+                    this.dataProcess.object_process.representation = null;
+                }
+
+                this.openModalSearch = false;
+            },
+
+            /*---------------------------------------------------
+            Name: listenerChangePageFormSearchRecord
+            Description:
+            Alters component: FormSearchRecord
+            ---------------------------------------------------*/
+            async listenerChangePageFormSearchRecord( page ){
+
+                let resultCountPage = this.calculateCountPage( page, this.dataTableSearch.itemsPerPage );
+                let dataObject = await this.getDataObjectList( this.dataTableSearch.idObject, resultCountPage.ini, resultCountPage.limit );
+
+                if( dataObject.code == 'OK' ){
+                    this.dataTableSearch.dataPaginator.pageIni = page
+                    this.dataTableSearch.dataTable = dataObject.data.data;
+                    this.dataTableSearch.dataPaginator.pageCount  = this.generateCounPaginator( this.dataTableSearch.dataTableCount, this.dataTableSearch.itemsPerPage );
+                }
+            },
 
             /*---------------------------------------------------
             Name: close
@@ -232,7 +350,7 @@
             },
 
         },
-        mixins: [apiMixins]
+        mixins: [apiMixins, processData]
 
     }
 
@@ -257,6 +375,10 @@
     }
     .number-order-avatar{
         color : white;
+    }
+
+   .v-input__icon--append{
+        display: none !important;
     }
 
 </style>

@@ -16,7 +16,7 @@
         <v-btn icon @click="$router.go(-1)">
           <v-icon>keyboard_return</v-icon>
         </v-btn>
-        <v-btn icon v-show="source == 'ListGeneral'">
+        <v-btn icon @click="toggleModalViewFilter" v-show="source == 'ListGeneral'">
           <v-icon>search</v-icon>
         </v-btn>
         <v-btn icon @click="toggleModalViewEdit"
@@ -65,9 +65,6 @@
                 </v-icon>
             </v-chip>
             </v-list-item-title>
-
-
-
           </v-list-item-content>
         </v-list-item>
         
@@ -110,6 +107,16 @@ export default {
     toggleModalViewEdit() {
       Object.assign(this.$data, this.$options.data.call(this));
       this.$emit('listenerToolbar', 'edit', this.codeTitle, false, this.$route.params.idObject); 
+    },
+
+     /*---------------------------------------------------
+    Name: toggleModalViewEdit
+    Description:
+    Alters component: 
+    ---------------------------------------------------*/
+    toggleModalViewFilter() {
+      Object.assign(this.$data, this.$options.data.call(this));
+      this.$emit( 'listenerToolbarFilter' ); 
     },
 
     /*---------------------------------------------------

@@ -464,8 +464,6 @@
               this.openModalSearch = true;
             }
           }
-
-          
         },
 
         /*---------------------------------------------------
@@ -509,12 +507,9 @@
             this.dataTableSearch.dataTable = dataObject.data.data;
             this.dataTableSearch.dataPaginator.pageCount  = this.generateCounPaginator( this.dataTableSearch.dataTableCount, this.dataTableSearch.itemsPerPage );
           }
-          console.log("🚀 ~ file: FormGeneral.vue ~ line 504 ~ listenerChangePageFormSearchRecord ~ resultCountPage", resultCountPage)
-
         }
-
     },
-     mixins: [apiMixins, processData]
+    mixins: [apiMixins, processData]
     
   }
   

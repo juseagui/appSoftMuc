@@ -48,7 +48,21 @@
     "titleGroupActivity" : "Gestión de la oportunidad",
     "msgSubHeaderUser" : "Responsable",
     "msgSubHeaderProgress" : "Progreso Actual"
+  },
+  "FormProcess": {
+    "titleGroup" : "Información principal",
+    "titleActivities" : "Definición de Actividades",
+    "btnEditActivity" : "Editar Actividad",
+    "btnNewActivity" : "Nueva Actividad",
+    "subtitleBtnNewActivity" : "Presionar para agregar una nueva actividad"
+  },
+  "FilterFormGeneral" : {
+    "msgBtnClose" : "Cerrar",
+    "msgBtnRestart" : "Reiniciar",
+    "msgBtnFilter" : "Filtrar",
+    "titleSubHeader" : "Buscar información"
   }
+
 
 
 }

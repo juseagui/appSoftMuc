@@ -27,9 +27,6 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/Object/ListObjects.vue')
   },
   {
@@ -38,10 +35,7 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Process/ListProcess.vue')
+    component: () => import('../views/Process/ListProcess.vue')
   },
   {
     path: '/home/',
@@ -49,10 +43,7 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Home.vue')
+    component: () => import('../views/Home.vue')
   },
   {
     path: '/user/:idObject/userDetail/:idDetail',
@@ -60,10 +51,7 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/User/User.vue')
+    component: () => import('../views/User/User.vue')
   },
   {
     path: '/general/:idObject/detail/:idDetail',
@@ -71,10 +59,7 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/General/DetailGeneral.vue')
+    component: () => import('../views/General/DetailGeneral.vue')
   },
   {
     path: '/object/:idObject/detail/:idDetail',
@@ -82,10 +67,7 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.F
-    component: () => import(/* webpackChunkName: "about" */ '../views/Object/DetailObject.vue')
+    component: () => import('../views/Object/DetailObject.vue')
   },
   
   {
@@ -94,7 +76,7 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    component: () => import(/* webpackChunkName: "about" */ '../views/General/SystemGeneral.vue')
+    component: () => import('../views/General/SystemGeneral.vue')
   }
 ]
 

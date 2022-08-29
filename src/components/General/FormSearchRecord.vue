@@ -20,7 +20,7 @@
             ></v-text-field>
         </v-card-title>   
         
-        <v-card-text style="padding : 15px;">
+        <v-card-text style="padding : 0px;">
             <template>
 
                 <TableGeneral :headers="dataTableSearch.headersTable" 

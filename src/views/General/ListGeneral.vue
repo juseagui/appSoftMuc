@@ -6,7 +6,8 @@
 
       <!-- Componente Toolbar para header de visualizacion de objectos -->
       <ToolbarGeneral :titleObject="titleObject" :source="source" :headersDetail="headersDetail"
-       @listenerToolbar="toggleModal" 
+       @listenerToolbar="toggleModal"
+       @listenerToolbarFilter="listenerToolbarFilter" 
        class = "mb-4"/>
 
      <!-- Component that lists the data -->
@@ -19,6 +20,12 @@
       <!-- Modal component for creating and editing records -->
       <FormGeneral :openModal="visibilityModal"  :operationModel="operationModel" :idObject="actualObjectForm"
       @listenerModal="toggleModal"/>
+
+      <FilterFormGeneral v-if="propertyFieldsFilter.length > 0 && openModalFilter" 
+      :openModalFilter="openModalFilter" 
+      :dataFilterField="propertyFieldsFilter" 
+      @listenerModalFilter="listenerToolbarFilter" ></FilterFormGeneral>
+
     </v-container>
   </v-app>
 </template>
@@ -30,6 +37,7 @@ import FormGeneral from "@/components/General/FormGeneral";
 import ToolbarGeneral from "@/components/General/ToolbarGeneral";
 import TableGeneral from "@/components/General/TableGeneral";
 import PaginatorGeneral from "@/components/General/PaginatorGeneral";
+import FilterFormGeneral from "../../components/General/FilterFormGeneral.vue";
 
 //import mixins
 import {apiMixins} from '@/mixins/apiMixins.js'
@@ -46,6 +54,10 @@ export default {
       visibilityModal: false,
       operationModel : { action: "", pk: "" },
       actualObjectForm : this.$route.params.idObject,
+
+      //parameters for the filter
+      openModalFilter : false,
+      propertyFieldsFilter : [],
 
       //params for Toolbar
       headersDetail: [
@@ -76,8 +88,10 @@ export default {
     FormGeneral,
     ToolbarGeneral,
     TableGeneral,
-    PaginatorGeneral
-  },
+    PaginatorGeneral,
+    FilterFormGeneral,
+    FilterFormGeneral
+},
   methods: {
     /*---------------------------------------------------
     Name: getListItemObject
@@ -111,6 +125,8 @@ export default {
             arrTempHeader.push(jsonDataHeader);
           });
 
+          this.propertyFieldsFilter = this.structureDataFiltering(dataPropertyList.data.data);
+          console.log("🚀 ~ file: ListGeneral.vue ~ line 130 ~ getListItemObject ~ this.propertyFieldsFilter", this.propertyFieldsFilter)
           this.dataTableObject.headersTableRelationship = arrTempHeader.concat(this.dataTableObject.headersDefaultRelationship);
 
         }
@@ -167,6 +183,15 @@ export default {
         this.listenerActionPaginator( this.dataTableObject.dataPaginator.pageIni );
     },
 
+    /*---------------------------------------------------
+    Name: listenerToolbarFilter
+    Description: 
+    Alters component: ToolbarGeneral
+    ---------------------------------------------------*/
+    listenerToolbarFilter() {
+      console.log("🚀 ~ file: ListGeneral.vue ~ line 130 ~ getListItemObject ~ this.propertyFieldsFilter", this.propertyFieldsFilter)
+      this.openModalFilter = !this.openModalFilter;
+    },
   },
   mixins: [apiMixins,processData]
 };

@@ -1,5 +1,4 @@
 <template>
-
   <v-container>
     <v-data-table
       v-model="recordSelected"
@@ -41,10 +40,8 @@
           </span>
         </v-row>
       </template>
-    
     </v-data-table>
   </v-container>
-
 </template>
 
 <script>

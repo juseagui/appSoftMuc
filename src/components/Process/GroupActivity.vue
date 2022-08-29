@@ -7,9 +7,8 @@
                 <v-alert
                 icon="account_tree"
                 type="info"
-                text
-                >
-                {{ $t("GroupActivity.titleGroupActivity") }}
+                text>
+                    {{ $t("GroupActivity.titleGroupActivity") }}
                 </v-alert>
             </v-col>
         </v-row>
@@ -168,7 +167,7 @@
 
             /*---------------------------------------------------
             Name: listenerStepSelectEdit
-            Description: 
+            Description: Change the activity selection
             Alters component: 
             ---------------------------------------------------*/
             listenerStepSelectEdit( activity ){

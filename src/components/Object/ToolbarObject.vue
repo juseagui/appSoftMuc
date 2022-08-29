@@ -43,10 +43,7 @@
                 <v-btn icon @click="$router.go(-1)">
                     <v-icon>keyboard_return</v-icon>
                 </v-btn>
-                <v-btn icon >
-                    <v-icon>search</v-icon>
-                </v-btn>
-
+              
                 <v-spacer></v-spacer>
 
                 <v-card
