@@ -3,11 +3,8 @@
              <v-toolbar 
                 flat>
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
-                <v-toolbar-title>Relaciones de modulos</v-toolbar-title>
+                <v-toolbar-title>{{ $t("TabsRelationship.toolbarTitle") }}</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn icon class="mr-3">
-                    <v-icon>search</v-icon>
-                </v-btn>
                 <v-btn color="secondary" dark class="mb-2" @click="listenerActionNewItemTabs()" >
                     <v-icon small :left="true"> add</v-icon> {{ $t("viewGeneral.btnAdd") }}
                 </v-btn>
@@ -50,13 +47,7 @@
                     </v-tab-item>
                 </v-tabs-items>
             </template>
-
-
-
         </v-card>
-
-      
-  
 </template>
 
 <script>

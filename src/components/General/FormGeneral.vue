@@ -154,8 +154,7 @@
                           :disabled="validateIsEdit( item.edit, item.name, item.type )"
                           return-object
                         ></v-select>
-                        
-
+                      
                     </v-col>
                 </v-row>
             </v-container>

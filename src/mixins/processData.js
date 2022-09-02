@@ -71,8 +71,7 @@ export const processData = {
                 })
             })
             return PropertysFilter;
-        }
-            
+        }   
 
     }
 

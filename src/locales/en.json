@@ -25,6 +25,9 @@
   "detailGeneral" : {
     "titleTabsProcess" : "Gestión de actividades"
   },
+  "detailObject" : {
+    "titleObjectRelationship" : "Relaciónes de modulos"
+  },
   "msgLoading" : {
     "loginSystem" : "Access system",
     "logoutSystem" : "Exit system"
@@ -42,7 +45,9 @@
     "msgActualActivity" : "Actual",
     "msgFinishDate" : "Finalizada",
     "msgTimeExecute" : "Tiempo ejecutado"
-    
+  },
+  "TabsRelationship": {
+    "toolbarTitle" : "Relaciones de modulos"
   },
   "GroupActivity": {
     "titleGroupActivity" : "Gestión de la oportunidad",

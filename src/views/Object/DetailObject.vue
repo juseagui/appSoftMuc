@@ -45,6 +45,8 @@
   import TableDetail from "@/components/General/TableDetail";
   import TabsRelationship from "@/components/Object/TabsRelationship";
 
+  import i18n from '@/i18n';
+
   //import mixins
   import {apiMixins} from '@/mixins/apiMixins.js'
   import {processData} from '@/mixins/processData.js'
@@ -81,7 +83,7 @@
               {text: "Modulo Hijo", value: "" },
               {text: "Habilitar", value: "" },
             ],
-            titleObjectRelationship : { title : "Relationship" , icon : "lens_blur" },
+            titleObjectRelationship : { title : "" , icon : "lens_blur" },
 
             //tabs relationship the objects
             responseRelationshipTabs : [],
@@ -110,6 +112,7 @@
         this.propsGroup = this.structureDataField(this.dataDetail);
         //Get related objects of detail
         await this.createTableRelationship();
+        this.titleObjectRelationship.title = i18n.t('detailObject.titleObjectRelationship');
 
     },
     components: {

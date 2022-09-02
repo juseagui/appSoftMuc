@@ -20,11 +20,8 @@
                     :complete="activityCurrent.sort >= activity.sort ? true : false"
                     :color=" (activityCurrent.sort == undefined ? 0 : (activityCurrent.sort + 1) ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort)
                         ? 'chipColorPrimary' : 'primary' " 
-                    :editable="(activityCurrent.sort == undefined ? 0 : (activityCurrent.sort + 1) ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort)
-                     ? true : 
-                     (activityCurrent.sort == undefined ? 0 : (activityCurrent.sort) ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort) 
-                     ? true : false"
-                     @click="listenerStepSelectEdit(activity)"
+                    :editable="calculeActivityEdit( activity )"
+                     @click="listenerStepSelectEdit( activity )"
                     >
                         {{activity.description}}
                         <small v-if="(activityCurrent.sort == undefined ? 1 : (activityCurrent.sort) ) ==  ( activity.sort )
@@ -145,7 +142,7 @@
                     color = "teal"
 
                 return color;
-            },
+            }
          },
 
         mounted(){
@@ -154,11 +151,13 @@
             this.emailUser = this.$store.state.dataLoginUser.email;
 
             let idActivityNext = this.activities[0].id;
-            
+            console.log("🚀 ~ file: GroupActivity.vue ~ line 159 ~ mounted ~ this.historical.length", this.historical.length)
             if(this.historical.length > 0){
-                this.activityCurrent = this.activities.find( element => element.id === this.historical[0].activity_historical );
+                
+                this.activityCurrent = this.activities.find( element => element.id === this.historical[0].activity_historical );                
                 idActivityNext = this.activities.find( element => element.sort === (this.activityCurrent.sort == undefined ? 0 : this.activityCurrent.sort ) + 1 )?.id;
             }
+            console.log("🚀 ~ file: GroupActivity.vue ~ line 161 ~ mounted ~ this.activityCurrent", this.activityCurrent)
 
             this.historicalSend.activity_historical = idActivityNext;
         },
@@ -173,6 +172,21 @@
             listenerStepSelectEdit( activity ){
                 this.historicalSend.activity_historical = activity.id;
             },
+
+            /*---------------------------------------------------
+            Name: listenerStepSelectEdit
+            Description: Change the activity selection
+            Alters component: 
+            ---------------------------------------------------*/
+            calculeActivityEdit( activity ){
+                
+                if( Object.keys(this.activityCurrent).length == 0 && this.activityCurrent.sort == 1 )
+                    return true
+                else if( this.activityCurrent.sort == activity.sort || this.activityCurrent.sort + 1 == activity.sort  )
+                    return true
+                else 
+                    return false
+            }
 
         }
         

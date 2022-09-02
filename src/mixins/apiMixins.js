@@ -53,7 +53,28 @@ export const apiMixins = {
                 params += "&parentRelationship="+filterRelationship.parentRelationship+"&pkParentRelationship="+filterRelationship.pkParentRelationship;
 
             await this.axios
-            .get( "/objects/data/" + idObject +"?offset="+ offset +"&limit="+ limit + params )
+            .get( "/objects/data/" + idObject +"?offset="+ offset +"&limit="+ limit + params)
+            .then((response) => {
+                responseApi.data = response.data.data;
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch((error) => {
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+                //console.log(data);
+            });
+            
+            return responseApi;    
+            
+        },
+
+        async getDataObjectListFilter(idObject, offset = 0, limit = 15, filterData = [] ){
+            let responseApi = [];
+
+            await this.axios
+            .put( "/objects/data/" + idObject +"/?offset="+ offset +"&limit="+ limit, filterData )
             .then((response) => {
                 responseApi.data = response.data.data;
                 responseApi.code = 'OK';

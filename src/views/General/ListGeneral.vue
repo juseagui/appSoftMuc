@@ -32,6 +32,7 @@
 
 
 <script>
+import {mapMutations} from "vuex";
 import Navbar from "@/components/General/Navbar";
 import FormGeneral from "@/components/General/FormGeneral";
 import ToolbarGeneral from "@/components/General/ToolbarGeneral";
@@ -93,14 +94,20 @@ export default {
     FilterFormGeneral
 },
   methods: {
+    ...mapMutations(['mostrarLoading','ocultarLoading',]),
     /*---------------------------------------------------
     Name: getListItemObject
     Description: Render the list of data returned by the API
     Alters component: TableGeneral
     ---------------------------------------------------*/
     async getListItemObject(){
+      
+      let dataValueList = {};
 
-      let dataValueList = await this.getDataObjectList(this.$route.params.idObject, 0,this.dataTableObject.itemsPerPage );
+      if( this.propertyFieldsFilter.length > 0 )
+        dataValueList = await this.getDataObjectListFilter(this.$route.params.idObject, 0,this.dataTableObject.itemsPerPage, this.propertyFieldsFilter );  
+      else
+        dataValueList = await this.getDataObjectList(this.$route.params.idObject, 0,this.dataTableObject.itemsPerPage, {} );
 
       if(dataValueList.code == 'OK'){
         this.dataTableObject.dataTable = dataValueList.data.data;
@@ -124,9 +131,10 @@ export default {
             };
             arrTempHeader.push(jsonDataHeader);
           });
+          
+          if( this.propertyFieldsFilter.length == 0 )
+            this.propertyFieldsFilter = this.structureDataFiltering(dataPropertyList.data.data);
 
-          this.propertyFieldsFilter = this.structureDataFiltering(dataPropertyList.data.data);
-          console.log("🚀 ~ file: ListGeneral.vue ~ line 130 ~ getListItemObject ~ this.propertyFieldsFilter", this.propertyFieldsFilter)
           this.dataTableObject.headersTableRelationship = arrTempHeader.concat(this.dataTableObject.headersDefaultRelationship);
 
         }
@@ -188,8 +196,14 @@ export default {
     Description: 
     Alters component: ToolbarGeneral
     ---------------------------------------------------*/
-    listenerToolbarFilter() {
-      console.log("🚀 ~ file: ListGeneral.vue ~ line 130 ~ getListItemObject ~ this.propertyFieldsFilter", this.propertyFieldsFilter)
+    async listenerToolbarFilter( save = false) {
+
+      if( save ){
+        this.mostrarLoading({ titulo : 'Realizando busqueda'});
+        await this.getListItemObject();
+        this.ocultarLoading()
+      }
+
       this.openModalFilter = !this.openModalFilter;
     },
   },
