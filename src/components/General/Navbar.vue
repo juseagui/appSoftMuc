@@ -109,7 +109,7 @@ export default {
     
     permisions.forEach(ele => {
       ele.category_object.forEach(obj => {
-        if(obj.visible == 1)
+        if(obj.visible == 1 && obj.object_rol[0].visible == 1 )
           this.links.push(obj)
       })
     });

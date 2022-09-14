@@ -127,7 +127,8 @@
       methods: {
         toggleCard(Id){
           let categoryListObj = this.categorys;
-          this.dataList = categoryListObj.find( obj => obj.id == Id ).category_object;
+          let itemSelected = categoryListObj.find( obj => obj.id == Id );
+          this.dataList = itemSelected.category_object.filter( object => object.object_rol[0]?.visible == 1 );
           this.showObjects = true;
         },
 
