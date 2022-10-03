@@ -4,14 +4,23 @@
                 flat>
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
                 <v-toolbar-title>{{ title }}</v-toolbar-title>
+                
                 <v-spacer></v-spacer>
+
+                <v-chip
+                    class="ma-2"
+                    color="primary"
+                    >
+                        {{ (this.$store.state.process.listState.find(element => element.code == this.$store.state.process.activityActual.process_state ) == undefined ) ? '' :
+                        this.$store.state.process.listState.find(element => element.code == this.$store.state.process.activityActual.process_state).description }}
+                </v-chip>
 
             </v-toolbar>
 
             <v-stepper  :value="(activityCurrent.sort == undefined ? 0 : activityCurrent.sort )" alt-labels>
                 <v-stepper-header>
                     <template v-for="(activity, index) in activities">
-                        <v-stepper-step :step="activity.sort" 
+                        <v-stepper-step :step="activity.sort"  :rules="(activity.process_state == '4' ) ? [() => false] : []"
                         :color=" (activityCurrent.sort == undefined ? 0 : (activityCurrent.sort) ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort)
                             ? 'chipColorPrimary' : 'primary' "
                         editable
@@ -115,6 +124,7 @@
                 this.activityCurrent = this.activities.find( element => element.id === this.historical[0].activity_historical );
                 this.filterHistorical =  this.historical.filter( item => item.activity_historical == this.activityCurrent.id );
                 this.foundData = true;
+                this.$store.dispatch("setActivityActual", this.activityCurrent );
             }
 
         },

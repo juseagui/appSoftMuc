@@ -70,9 +70,7 @@ export default {
         idObject : 0,
         headersTableRelationship: [],
         headersDefaultRelationship: [{ text: "Actions", value: "action", sortable: false }],
-        actionsTableRelationship: [{ icon: "visibility", value: "detailItem"},
-                                { icon: "edit", value: "editItem"},
-                                { icon: "delete", value: "deleteItem"},],
+        actionsTableRelationship: [{ icon: "visibility", value: "detailItem"}],
         dataTable : [],
         dataTableCount : 0,
         dataPaginator : { pageCount: 0 , pageIni: 1 },
@@ -83,6 +81,7 @@ export default {
   async mounted() {
     //get item detail for object
     await this.getListItemObject();
+    this.validatePermissionListObject();
   },
   components: {
     Navbar,
@@ -206,6 +205,33 @@ export default {
 
       this.openModalFilter = !this.openModalFilter;
     },
+
+    /*---------------------------------------------------
+    Name: validatePermissionListObject
+    Description: 
+    Alters component: 
+    ---------------------------------------------------*/
+    validatePermissionListObject() {
+      
+      let routeActual = this.$route.params.idObject;
+      let foundValueFull = null
+      this.$store.state.objectsPermissions.filter(
+        function (category) {
+           let foundValue = category.category_object.find( object => object.id == routeActual );
+           if(foundValue != 'undefined' &&  foundValue != null )
+            foundValueFull = foundValue;
+            return  true;
+        });
+        
+        //Validate permision
+        if(foundValueFull)
+          if(foundValueFull.object_rol[0].edit_data == "1")
+            this.dataTableObject.actionsTableRelationship.push({ icon: "edit", value: "editItem"});
+          if(foundValueFull.object_rol[0].delete_data == "1")
+            this.dataTableObject.actionsTableRelationship.push({ icon: "delete", value: "deleteItem"});
+    },
+
+
   },
   mixins: [apiMixins,processData]
 };

@@ -35,7 +35,6 @@
                         </v-col>
 
                         <v-col  cols="12" sm="8" md="6" >
-
                             <v-text-field
                                 label="Codigo"
                                 counter="50"
@@ -46,7 +45,36 @@
                             </v-text-field>
                         </v-col>
                     </v-row>
-
+                        
+                    <v-row>
+                        <v-col  cols="12" sm="12" md="12" >
+                                <v-radio-group v-model="data.process_state">
+                                <template v-slot:label>
+                                    <div>{{$t("FormProcess.titleStateActivity")}} </div>
+                                </template>
+                                <v-radio value="1">
+                                    <template v-slot:label>
+                                    <div>{{$t("FormProcess.textStateSelect")}}<strong class="info--text">{{$t("FormProcess.stateInfo")}}</strong></div>
+                                    </template>
+                                </v-radio>
+                                <v-radio value="2">
+                                    <template v-slot:label>
+                                    <div>{{$t("FormProcess.textStateSelect")}}<strong class="warning--text">{{$t("FormProcess.stateWarning")}}</strong></div>
+                                    </template>
+                                </v-radio>
+                                <v-radio value="3">
+                                    <template v-slot:label>
+                                    <div>{{$t("FormProcess.textStateSelect")}}<strong class="success--text">{{$t("FormProcess.stateSuccess")}}</strong></div>
+                                    </template>
+                                </v-radio>
+                                <v-radio value="4">
+                                    <template v-slot:label>
+                                    <div>{{$t("FormProcess.textStateSelect")}}<strong class="error--text">{{$t("FormProcess.stateError")}}</strong></div>
+                                    </template>
+                                </v-radio>
+                                </v-radio-group>
+                        </v-col>
+                    </v-row>
                 </v-card-text>
 
                 <v-divider ></v-divider>

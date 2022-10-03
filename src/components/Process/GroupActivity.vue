@@ -16,7 +16,7 @@
         <v-stepper :value="(activityCurrent.sort == undefined ? 0 : activityCurrent.sort ) + 1" alt-labels>
             <v-stepper-header>
                 <template v-for="(activity, index) in activities">
-                    <v-stepper-step :step="activity.sort" 
+                    <v-stepper-step :step="activity.sort" :rules="(activity.process_state == '4' ) ? [() => false] : []"
                     :complete="activityCurrent.sort >= activity.sort ? true : false"
                     :color=" (activityCurrent.sort == undefined ? 0 : (activityCurrent.sort + 1) ) ==  (activityCurrent.sort == undefined ? 0 : activity.sort)
                         ? 'chipColorPrimary' : 'primary' " 
@@ -120,12 +120,19 @@
 
         computed : {
             calculateProgress(){
-                let lengthActivities =  this.activities.length;
-                let progress = (100 / lengthActivities ) * ( this.activityCurrent.sort == undefined ? 0 : this.activityCurrent.sort ) ?? 0 ;
+
+                let progress = 0;
+                let lengthActivities = 0;
+                if(this.activityCurrent.process_state != "4"){
+                    lengthActivities =  this.activities.filter(activity => activity.process_state != "4" ).length;
+                    progress = (100 / lengthActivities ) * ( this.activityCurrent.sort == undefined ? 0 : this.activityCurrent.sort ) ?? 0 ;
+                }
+                
                 return progress.toFixed(1)+'%';
             },
             calculatecolorProgress(){
-                let lengthActivities =  this.activities.length;
+                
+                let  lengthActivities =  this.activities.filter(activity => activity.process_state != "4" ).length;
                 let progress = (100 / lengthActivities ) * ( this.activityCurrent.sort == undefined ? 0 : this.activityCurrent.sort ) ?? 0 ;
 
                 let color = ""
@@ -151,13 +158,14 @@
             this.emailUser = this.$store.state.dataLoginUser.email;
 
             let idActivityNext = this.activities[0].id;
-            console.log("🚀 ~ file: GroupActivity.vue ~ line 159 ~ mounted ~ this.historical.length", this.historical.length)
             if(this.historical.length > 0){
                 
                 this.activityCurrent = this.activities.find( element => element.id === this.historical[0].activity_historical );                
                 idActivityNext = this.activities.find( element => element.sort === (this.activityCurrent.sort == undefined ? 0 : this.activityCurrent.sort ) + 1 )?.id;
+                this.$store.dispatch("setActivityActual", this.activityCurrent );
+            }else{
+                this.$store.dispatch("setActivityActual", { process_state : '1'  } );
             }
-            console.log("🚀 ~ file: GroupActivity.vue ~ line 161 ~ mounted ~ this.activityCurrent", this.activityCurrent)
 
             this.historicalSend.activity_historical = idActivityNext;
         },
@@ -182,7 +190,7 @@
                 
                 if( Object.keys(this.activityCurrent).length == 0 && this.activityCurrent.sort == 1 )
                     return true
-                else if( this.activityCurrent.sort == activity.sort || this.activityCurrent.sort + 1 == activity.sort  )
+                else if( this.activityCurrent.sort == activity.sort || this.activityCurrent.sort + 1 == activity.sort || activity.process_state == '4'  )
                     return true
                 else 
                     return false

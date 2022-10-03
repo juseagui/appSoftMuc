@@ -89,6 +89,9 @@
                                                     <v-list-item-content>
                                                         <v-list-item-title v-html="item.description"/>
                                                         <v-list-item-subtitle v-html="item.code"/>
+                                                        <v-list-item-subtitle v-html="
+                                                            (stateActivity.find(element => element.code == item.process_state ) == undefined ) ? '' : stateActivity.find(element => element.code == item.process_state).description
+                                                            "/>
                                                     </v-list-item-content>
                                                         <v-chip @click="upsertActivity( item, 'edit' )" color="headerTable" text-color="primary">
                                                             <v-icon  left>
@@ -201,6 +204,14 @@
             openModalSearch : false,
             titleFormSearch : "",
             codeInput : "",
+
+            stateActivity : [
+                { code : 1, description : 'Iniciado' },
+                { code : 2, description : 'En proceso' },
+                { code : 3, description : 'Ganada' },
+                { code : 4, description : 'Perdida' }
+            ]
+
         }),
 
         components: {

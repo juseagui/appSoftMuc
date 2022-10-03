@@ -59,15 +59,14 @@
                       </v-card-text>
                      
                     </v-col>
-                    <v-col cols="12" md="4" class="primary" >
-                      <v-card-text class="white--text mt-12">
+                    <v-col cols="12" md="4" class="primary " >
+                      <v-card-text class="white--text mt-12 justify-center">
                         <h1 class="text-center display-1">{{ $t('loginPage.titleWelcome') }}</h1>
                         <h5
                           class="text-center"
                         > {{ $t('loginPage.msgWelcome') }}</h5>
                       </v-card-text>
                       <div class="text-center">
-                        <!-- <v-btn rounded outlined dark @click="step++">{{ $t('loginPage.signUp') }}</v-btn>-->
                       </div>
                     </v-col>
                   </v-row>

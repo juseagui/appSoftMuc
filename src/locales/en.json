@@ -1,8 +1,8 @@
 {
   "loginPage" : {
     "welcome": "Bienvenido",
-    "msgWelcome": "Ingrese sus datos personales",
-    "titleWelcome" : "Hello, Friend!",
+    "msgWelcome": "¡Potencializa tus resultados!",
+    "titleWelcome" : "GPCE Software",
     "msgEmailEnsure": "Ingrese el correo electronico para iniciar sesión",
     "ForgotPass" : "¿Olvidaste tu contraseña?",
     "signLogin" : "INICIAR SESIÓN",
@@ -29,8 +29,8 @@
     "titleObjectRelationship" : "Relaciónes de modulos"
   },
   "msgLoading" : {
-    "loginSystem" : "Access system",
-    "logoutSystem" : "Exit system"
+    "loginSystem" : "Ingresando al sistema",
+    "logoutSystem" : "Saliendo del sistema"
   },
   "FormGeneral" : {
     "msgRequiredModal" : "* Indica campo requerido",
@@ -59,7 +59,13 @@
     "titleActivities" : "Definición de Actividades",
     "btnEditActivity" : "Editar Actividad",
     "btnNewActivity" : "Nueva Actividad",
-    "subtitleBtnNewActivity" : "Presionar para agregar una nueva actividad"
+    "subtitleBtnNewActivity" : "Presionar para agregar una nueva actividad",
+    "titleStateActivity" : "Selecciona el estado para la actividad",
+    "textStateSelect" : "Estado : ",
+    "stateInfo" : "Iniciado",
+    "stateWarning" : "En proceso",
+    "stateSuccess" : "Ganada",
+    "stateError" : "Perdida"
   },
   "FilterFormGeneral" : {
     "msgBtnClose" : "Cerrar",

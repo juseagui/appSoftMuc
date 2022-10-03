@@ -15,7 +15,19 @@ export default new Vuex.Store({
       email : null,
       auth: false
     },
-    objectsPermissions : []
+    objectsPermissions : [],
+    navigateObject : {
+      objeIdActual : 0
+    },
+    process : {
+      activityActual : {},
+      listState : [
+        { code : 1, description : 'Iniciado' },
+        { code : 2, description : 'En proceso' },
+        { code : 3, description : 'Ganada' },
+        { code : 4, description : 'Perdida' }
+      ]
+    }
   },
   mutations: {
     mostrarLoading(state, payload){
@@ -39,7 +51,14 @@ export default new Vuex.Store({
     },
     setObjectsPermissions(state, objectPropertys ){
       state.objectsPermissions = objectPropertys;
-    }
+    },
+    setObjectsActual(state, objeIdActual ){
+      state.navigateObject.objeIdActual = objeIdActual;
+    },
+    setActivityActual(state, activityActual ){
+      state.process.activityActual = activityActual;
+    },
+
   },
   actions: {
     login({ commit },userLogin, token){
@@ -53,6 +72,12 @@ export default new Vuex.Store({
     },
     setObjectsPermissions({ commit },objectPropertys ){
       commit("setObjectsPermissions", objectPropertys);
+    },
+    setObjectsActual({ commit },objeIdActual ){
+      commit("setObjectsActual", objeIdActual);
+    },
+    setActivityActual({ commit },activityActual ){
+      commit("setActivityActual", activityActual);
     }
   },
   modules: {

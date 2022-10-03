@@ -20,7 +20,7 @@
           <v-icon>search</v-icon>
         </v-btn>
         <v-btn icon @click="toggleModalViewEdit"
-        v-show="source == 'detailGeneral' || source == 'detailObject'">
+        v-show=" activeBtnEdit && (source == 'detailGeneral' || source == 'detailObject') ">
           <v-icon>edit_note</v-icon>
         </v-btn>
         <v-btn icon @click="toggleModalRelationship"
@@ -70,8 +70,8 @@
         
       </v-card>
 
-        <v-btn color="secondary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'ListGeneral'">
-         <v-icon small :left="true">add</v-icon> {{ $t("viewGeneral.btnAdd") }}
+        <v-btn v-if="activeBtnAdd" color="secondary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'ListGeneral'">
+         <v-icon small :left="true">add</v-icon> {{ $t("viewGeneral.btnAdd")}}
         </v-btn>
 
       </v-toolbar>
@@ -81,14 +81,19 @@
 
 
 export default {
- name: "toolbarGeneral",
- props: ['titleObject','codeTitle','source','headersDetail'],
- data() {
-   return {
-     param : ""
-   }
- },
- methods: {
+  name: "toolbarGeneral",
+  props: ['titleObject','codeTitle','source','headersDetail'],
+  data() {
+    return {
+      param : "",
+      activeBtnAdd : true,
+      activeBtnEdit : true,
+    }
+  },
+  mounted() {
+    this.validatePermissionObject();
+  },
+  methods: {
     /*---------------------------------------------------
     Name: toggleModalViewAdd
     Description: 
@@ -127,7 +132,33 @@ export default {
     toggleModalRelationship() {      
       Object.assign(this.$data, this.$options.data.call(this));
       this.$emit( 'listenerToolbarRelationship' ); 
-    }
+    },
+
+    /*---------------------------------------------------
+    Name: validatePermissionObject
+    Description: 
+    Alters component: 
+    ---------------------------------------------------*/
+    validatePermissionObject() {
+      
+      let routeActual = this.$route.params.idObject;
+      let foundValueFull = null
+      this.$store.state.objectsPermissions.filter(
+        function (category) {
+           let foundValue = category.category_object.find( object => object.id == routeActual );
+           if(foundValue != 'undefined' &&  foundValue != null )
+            foundValueFull = foundValue;
+            return  true;
+        });
+        
+        //Validate permision ADD
+        if(foundValueFull)
+          if(foundValueFull.object_rol[0].add_data != "1")
+            this.activeBtnAdd = false;
+          if(foundValueFull.object_rol[0].edit_data != "1")
+            this.activeBtnEdit = false;
+    },
+        
  }
 }
 </script>

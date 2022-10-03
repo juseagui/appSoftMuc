@@ -186,7 +186,7 @@
             <v-btn
               color="primary darken-1"
               text
-              :disabled="!valid"
+              :disabled="((this.$store.state.process.activityActual.process_state == '4') ? true : !valid )"
               @click="validate()"
             > {{$t("FormGeneral.btnSave")}}
             </v-btn>
@@ -348,7 +348,6 @@
 
             if( responsePost.code == 'OK' ){
               //validate if exist process
-
               if(this.existProcess && this.source != "ListObjects" ){
                 this.objeHistoricalSend.id_record =  this.operationLocal.action == 'add' ? responsePost.data.id  : this.operationLocal.pk;
                 this.objeHistoricalSend.object_historical = this.idObject;
@@ -357,6 +356,17 @@
                 //Send Historial
                 await this.postHistorical( this.objeHistoricalSend );
               
+              }
+
+              //Validate if object permission and update permissionObject in store
+              if( this.idObject == '8' ||  this.source == "ListObjects" ){
+                let responseObjects = await this.getObjectsPermissions();
+          
+                if(responseObjects.code == 'OK'){
+                    //set objects permision store in vuex
+                    this.$store.dispatch("setObjectsPermissions", responseObjects.data.data );
+                }
+
               }
 
               this.close(true);

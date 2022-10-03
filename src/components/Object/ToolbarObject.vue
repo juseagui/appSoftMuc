@@ -70,7 +70,7 @@
 
             </v-card>
 
-            <v-btn color="secondary" dark class="mb-2"  @click="toggleModalViewAdd">
+            <v-btn v-if="activeBtnAdd" color="secondary" dark class="mb-2"  @click="toggleModalViewAdd">
                <v-icon small :left="true"> add</v-icon> {{ $t("viewGeneral.btnAdd") }}
             </v-btn>
 
@@ -82,14 +82,18 @@
 <script>
 
 export default {
- name: "toolbarObject",
- props: ['titleObject','descriptionObject','iconObject','headersDetail'],
- data() {
-   return {
-     param : ""
-   }
+  name: "toolbarObject",
+  props: ['titleObject','descriptionObject','iconObject','headersDetail'],
+  data() {
+    return {
+      param : "",
+      activeBtnAdd : false,
+    }
  },
- methods: {
+  mounted() {
+    this.validatePermissionObject();
+    },
+  methods: {
     /*---------------------------------------------------
     Name: toggleModalViewAdd
     Description: Notifies you add a new item to parent component
@@ -108,7 +112,31 @@ export default {
     toggleModalViewEdit() {
       Object.assign(this.$data, this.$options.data.call(this));
       this.$emit('listenerToolbar', 'edit', this.codeTitle, false); 
-    }
+    },
+
+    /*---------------------------------------------------
+    Name: validatePermissionObject
+    Description: 
+    Alters component: 
+    ---------------------------------------------------*/
+    validatePermissionObject() {
+      
+      let routeActual = this.$route.params.idObject;
+      let foundValueFull = null
+      this.$store.state.objectsPermissions.filter(
+        function (category) {
+           let foundValue = category.category_object.find( object => object.id == routeActual );
+           if(foundValue != 'undefined' &&  foundValue != null )
+            foundValueFull = foundValue;
+            return  true;
+        });
+        
+        //Validate permision ADD
+        if(foundValueFull)
+          if(foundValueFull.object_rol[0].add_data == "1")
+            this.activeBtnAdd = true;
+    },
+
  }
 }
 

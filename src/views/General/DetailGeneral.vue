@@ -18,7 +18,7 @@
         @listenerModal="toggleModal" />
 
       <!-- Modal component for object relationship management -->
-      <TabsRelationship  v-if="responseRelationshipTabs.length > 0"
+      <TabsRelationship  v-if="responseRelationshipTabs.length > 0 && dataTableRelationship.idObjectRelationship != 0"
       :dataTable="dataTableRelationship" 
       :dataTabs="responseRelationshipTabs"
       @listenerActionPaginatorTabs="listenerChangePage"
@@ -75,9 +75,7 @@ export default {
             idObjectRelationship : 0,
             headersTableRelationship: [],
             headersDefaultRelationship: [{ text: "Actions", value: "action", sortable: false }],
-            actionsTableRelationship: [{ icon: "visibility", value: "detailItem"},
-                                    { icon: "edit", value: "editItem"},
-                                    { icon: "delete", value: "deleteItem"},],
+            actionsTableRelationship: [{ icon: "visibility", value: "detailItem"}],
             dataTable : [],
             dataTableCount : 0,
             dataPaginator : { pageCount: 0 , pageIni: 1 },
@@ -191,7 +189,8 @@ export default {
         );
 
         if(dataValueList.code == 'OK'){
-        
+          
+          this.dataTableRelationship.idObjectRelationship = objChild;
           this.dataTableRelationship.dataTable = dataValueList.data.data;
           this.dataTableRelationship.dataTableCount = dataValueList.data.count;
           this.dataTableRelationship.dataPaginator.pageCount = this.generateCounPaginator( this.dataTableRelationship.dataTableCount, this.dataTableRelationship.itemsPerPage );
@@ -214,7 +213,6 @@ export default {
             });
 
             this.dataTableRelationship.headersTableRelationship = arrTempHeader.concat( this.dataTableRelationship.headersDefaultRelationship );
-            this.dataTableRelationship.idObjectRelationship = objChild;
           }
         }
       },

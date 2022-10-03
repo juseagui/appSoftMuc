@@ -40,9 +40,6 @@
         </v-list-item>
         
       </v-card>
-
-       
-
       </v-toolbar>
 </template>
 

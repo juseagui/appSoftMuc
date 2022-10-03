@@ -5,7 +5,7 @@
                 <v-app-bar-nav-icon></v-app-bar-nav-icon>
                 <v-toolbar-title>{{ $t("TabsRelationship.toolbarTitle") }}</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-btn color="secondary" dark class="mb-2" @click="listenerActionNewItemTabs()" >
+                <v-btn v-show="activeBtnAdd" color="secondary" dark class="mb-2" @click="listenerActionNewItemTabs()" >
                     <v-icon small :left="true"> add</v-icon> {{ $t("viewGeneral.btnAdd") }}
                 </v-btn>
 
@@ -61,6 +61,8 @@
         data: () => ({ 
             tabRelationship : 0,
             objeId : 0,
+            activeBtnAdd : true,
+            actionAditionalTable : [],
         }),
         components: {
             TableGeneral,
@@ -77,6 +79,9 @@
                     this.objeId = newVal.idObjectRelationship;
                 }
             },
+        },
+        mounted() {
+            this.validatePermissionObject();
         },
         methods : {
 
@@ -120,7 +125,36 @@
             listenerActionNewItemTabs(){
                 Object.assign(this.$data, this.$options.data.call(this));
                 this.$emit( 'listenerActionTableTabs', 'addItem', null );  
-            }
+            },
+
+            /*---------------------------------------------------
+            Name: validatePermissionObject
+            Description: 
+            Alters component: 
+            ---------------------------------------------------*/
+            validatePermissionObject() {
+            
+                let routeActual = this.dataTable.idObjectRelationship;
+                
+                let foundValueFull = null
+                this.$store.state.objectsPermissions.filter(
+                    function (category) {
+                    let foundValue = category.category_object.find( object => object.id == routeActual );
+                    if(foundValue != 'undefined' &&  foundValue != null )
+                        foundValueFull = foundValue;
+                        return  true;
+                    });
+                
+                //Validate permision ADD
+                if(foundValueFull)
+                    if(foundValueFull.object_rol[0].add_data != "1")
+                        this.activeBtnAdd = false;
+                    if(foundValueFull.object_rol[0].edit_data == "1")
+                        this.dataTable.actionsTableRelationship.push({ icon: "edit", value: "editItem"});
+                    if(foundValueFull.object_rol[0].delete_data == "1")
+                        this.dataTable.actionsTableRelationship.push({ icon: "delete", value: "deleteItem"});
+
+            },
 
         }
 
