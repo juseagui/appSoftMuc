@@ -22,10 +22,10 @@ export default new Vuex.Store({
     process : {
       activityActual : {},
       listState : [
-        { code : 1, description : 'Iniciado' },
-        { code : 2, description : 'En proceso' },
-        { code : 3, description : 'Ganada' },
-        { code : 4, description : 'Perdida' }
+        { code : 1, description : 'Iniciado', color : 'blue', icon : 'email'  },
+        { code : 2, description : 'En proceso', color : 'yellow', icon : 'email' },
+        { code : 3, description : 'Ganada', color : 'green',  icon : 'email' },
+        { code : 4, description : 'Perdida', color : 'red', icon : 'email'  }
       ]
     }
   },

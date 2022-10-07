@@ -43,7 +43,7 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    component: () => import('../views/Home.vue')
+    component: () => import('../views/Report/HomeReport.vue')
   },
   {
     path: '/user/:idObject/userDetail/:idDetail',
