@@ -1,30 +1,79 @@
 {
   "loginPage" : {
-    "welcome": "Welcome",
-    "msgWelcome": "Enter your personal details and start journay with us",
-    "titleWelcome" : "Hello, Friend!",
-    "msgEmailEnsure": "Ensure your email for registration",
-    "ForgotPass" : "Forgot your password ?",
-    "signLogin" : "SIGN IN",
+    "welcome": "Bienvenido",
+    "msgWelcome": "¡Potencializa tus resultados!",
+    "titleWelcome" : "GPCE Software",
+    "msgEmailEnsure": "Ingrese el correo electronico para iniciar sesión",
+    "ForgotPass" : "¿Olvidaste tu contraseña?",
+    "signLogin" : "INICIAR SESIÓN",
     "signUp" : "SIGN UP",
-    "msgErrorLogin" : "User or Password incorrect or not existing"
+    "msgErrorLogin" : "Usuario o Contraseña incorrecta o no existente"
   },
   "registerPage" : {
     "welcome": "Welcome Back!",
     "msgWelcome": "To Keep connected with us please login with your personnel info",
     "signUp" : "SIGN UP"
   },
-  "viewGeneral" : {
-    "btnAdd" : "new Item",
-    "numberRows" : "number of rows"
+  "navBar" : {
+    "btnSystem" : "Sistema",
+    "btnLogout" : "Cerrar Sesión"
   },
-  "formGeneral" : {
-    "required" : "is required"
+  "viewGeneral" : {
+    "btnAdd" : "Nuevo registro",
+    "numberRows" : "Numero de filas"
+  },
+  "detailGeneral" : {
+    "titleTabsProcess" : "Gestión de actividades"
+  },
+  "detailObject" : {
+    "titleObjectRelationship" : "Relaciónes de modulos"
   },
   "msgLoading" : {
-    "loginSystem" : "Access system",
-    "logoutSystem" : "Exit system"
-
+    "loginSystem" : "Ingresando al sistema",
+    "logoutSystem" : "Saliendo del sistema"
+  },
+  "FormGeneral" : {
+    "msgRequiredModal" : "* Indica campo requerido",
+    "btnSave" : "Guardar",
+    "btnClose" : "Cerrar"
+  },
+  "ToolbarSystem" : {
+    "titleToolbar" : "Sistema"
+  },
+  "TabsProcess": {
+    "msgNotFound" : "No se ah registrado información",
+    "msgActualActivity" : "Actual",
+    "msgFinishDate" : "Finalizada",
+    "msgTimeExecute" : "Tiempo ejecutado"
+  },
+  "TabsRelationship": {
+    "toolbarTitle" : "Relaciones de modulos"
+  },
+  "GroupActivity": {
+    "titleGroupActivity" : "Gestión de la oportunidad",
+    "msgSubHeaderUser" : "Responsable",
+    "msgSubHeaderProgress" : "Progreso Actual"
+  },
+  "FormProcess": {
+    "titleGroup" : "Información principal",
+    "titleActivities" : "Definición de Actividades",
+    "btnEditActivity" : "Editar Actividad",
+    "btnNewActivity" : "Nueva Actividad",
+    "subtitleBtnNewActivity" : "Presionar para agregar una nueva actividad",
+    "titleStateActivity" : "Selecciona el estado para la actividad",
+    "textStateSelect" : "Estado : ",
+    "stateInfo" : "Iniciado",
+    "stateWarning" : "En proceso",
+    "stateSuccess" : "Ganada",
+    "stateError" : "Perdida"
+  },
+  "FilterFormGeneral" : {
+    "msgBtnClose" : "Cerrar",
+    "msgBtnRestart" : "Reiniciar",
+    "msgBtnFilter" : "Filtrar",
+    "titleSubHeader" : "Buscar información"
   }
+
+
 
 }

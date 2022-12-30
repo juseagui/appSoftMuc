@@ -1,138 +1,31 @@
 <template>
   <v-app>
-    <!-- Componente Navbar nagacion entre objectos y modulos -->
+    <!-- Navbar component navigation between objects and modules -->
     <Navbar />
     <v-container>
-         <!-- Componente Toolbar para header de visualizacion de objectos -->
-        <ToolbarGeneral :titleObject="titleObject" @listenerToolbar="toggleModal" :codeTitle="codeTitle" :source="source" 
-        :headersDetail="headersDetail"  />  
+         <!-- Toolbar component for object display header -->
+      <ToolbarGeneral 
+          :titleObject="titleObject" 
+          :codeTitle="codeTitle" 
+          :source="source" 
+          :headersDetail="headersDetail"
+          @listenerToolbar="toggleModal"  />  
 
-        <v-card >
-        <v-card-text v-for="itemGroup in propsGroup" style="padding : 15px;"  >
-       
-            <span class="text-h6" >{{itemGroup.name}} </span>
-            <v-divider class="divider-group" ></v-divider>
-            <v-container>
-                <v-row>
-                  
-                    <!-- interaccion de campos de un determinado objecto -->
-                    <v-col v-for="item in itemGroup.fields"
-                        cols="12"
-                        :sm="item.type == 3 ? null : item.columns == 1 ? '12' : item.columns == 2 ? '8' :'6' "
-                        :md="item.type == 3 ? null : item.columns == 1 ? '12' : item.columns == 2 ? '6' :'4' ">
+      <TableDetail :dataField="propsGroup"  />
 
-                        <!-- Validate if Type 1 -- text -->
-                        <v-text-field
-                         class="some-style"
-                          v-if = "item.type == '1' "
-                          :label="item.description+ (item.required == 1  ?' *' : '')"
-                          :counter= item.number_charac 
-                          :hint="item.hint == '' ? false : item.hint"
-                          :value= item.value
-                          readonly
-                          disabled
-                          dense
-                          required>
-                        </v-text-field>
+      <!-- Modal component for creating and editing records -->
+      <FormGeneral :openModal="visibilityModal" :operationModel="operationModel" :idObject="actualObjectForm" :source="source" :isRelationship="isSaveRelationship"
+        @listenerModal="toggleModal" />
 
-                        <!-- Validate if Type 2 -- Email -->
-                        <v-text-field
-                        class="some-style"
-                          v-else-if = "item.type == '2'"
-                          prepend-icon="email"
-                          :label="item.description+ (item.required == 1  ?' *' : '')"
-                          :counter= item.number_charac 
-                          :hint="item.hint == null ? '' : item.hint"
-                          :value= item.value
-                          readonly
-                          disabled
-                          dense
-                          color = "#000000"
-                          required>
-                        </v-text-field>
+      <!-- Modal component for object relationship management -->
+      <TabsRelationship  v-if="responseRelationshipTabs.length > 0 && dataTableRelationship.idObjectRelationship != 0"
+      :dataTable="dataTableRelationship" 
+      :dataTabs="responseRelationshipTabs"
+      @listenerActionPaginatorTabs="listenerChangePage"
+      @listenerActionChangeTabs="listenerChangeTabs"
+      @listenerActionTableTabs="listenerActionTable" />
 
-                        <!-- Validate if Type 3 -- text Area -->
-                         <v-textarea 
-                         class="some-style"
-                          v-else-if = "item.type == '3'"
-                          :autocomplete= item.description
-                          :value= item.value
-                          readonly
-                          auto-grow
-                          :counter= item.number_charac
-                          rows="2"
-                          disabled
-                          dense
-                          :label="item.description+ (item.required == 1  ?' *' : '')"
-                          :hint="item.hint == '' ? false : item.hint"
-                          >
-                        </v-textarea>
-
-                        <!-- Validate if Type 4 -- Date -->
-                        <v-menu
-                          v-else-if = "item.type == '4'"
-                          :close-on-content-click="false"
-                          :nudge-right="40"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="auto"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                             class="some-style"
-                              :label="item.description+ (item.required == 1  ?' *' : '')"
-                              prepend-icon="insert_invitation"
-                              readonly
-                              dense
-                              disabled
-                              :value= item.value
-                              :hint="item.hint == '' ? false : item.hint"
-                              v-bind="attrs"
-                              v-on="on"
-                            ></v-text-field>
-                          </template>
-                        </v-menu>
-
-                         <!-- Validate if Type 5 -- Number -->
-                         <v-text-field
-                         class="some-style"
-                          v-else-if = "item.type == '5'"
-                          :label="item.description+ (item.required == 1  ?' *' : '')"
-                          :counter= item.number_charac
-                          type="number"
-                          :hint="item.hint == '' ? false : item.hint"
-                          :value= item.value
-                          readonly
-                          disabled
-                          dense
-                          required>
-                        </v-text-field>
-
-                        <!-- Validate if Type 6 -- Decimal -->
-                         <v-text-field
-                         class="some-style"
-                          v-else-if = "item.type == '6'"
-                          :label="item.description+ (item.required == 1  ?' *' : '')"
-                          counter= item.number_charac
-                          :hint="item.hint == '' ? false : item.hint"
-                          :value= item.value
-                          readonly
-                          disabled
-                          dense
-                          required>
-                        </v-text-field>
-                        
-                        <v-divider ></v-divider>
-                       
-                    </v-col>
-                </v-row>
-            </v-container>
-        
-          </v-card-text>
-      </v-card>
-
-      <!-- Componente modal para creación y edicion de registros -->
-      <FormGeneral :openModal="visibilityModal" @listenerModal="toggleModal" :operationModel="operationModel" />
+      <TabsProcess v-if="existProcess" :activities="activities" :historical="historical" :title="titleTabsProcess" ></TabsProcess>
 
     </v-container>
 </v-app>
@@ -142,147 +35,272 @@
 import Navbar from "@/components/General/Navbar";
 import ToolbarGeneral from "@/components/General/ToolbarGeneral";
 import FormGeneral from "@/components/General/FormGeneral";
+import TableDetail from "@/components/General/TableDetail";
+import TabsRelationship from "@/components/Object/TabsRelationship";
+import TabsProcess from "@/components/Process/TabsProcess";
+
+import i18n from '../../i18n';
 
 //import mixins
 import {apiMixins} from '@/mixins/apiMixins.js'
+import {processData} from '@/mixins/processData.js'
 
 export default {
-    name:"detailGeneral",
+  name:"detailGeneral",
   data() {
       return {
-          deta : 0,
           titleObject : "",
-          valid : true,
           codeTitle : "",
-          headersDetail: [
-          { text: "Fecha de Creación", value: "", ico : "event_available"},
-          {text: "Fecha de Modificación", value: "", ico : "restore"},
-          {text: "creador", value: "", ico : "person"}],
           source : "detailGeneral",
           //Data object field -> value
           dataDetail : [],
           propsGroup : [],
 
-          //params for modal
+          //parameters for the modal of edition and creation of objects
           visibilityModal: false,
           operationModel : { action: "", pk: "" },
+          actualObjectForm : this.$route.params.idObject,
+          headersDetail: [
+            { text: "Fecha de Creación", value: "", ico : "event_available", chip : false},
+            {text: "Fecha de Modificación", value: "", ico : "restore", chip : false},
+            {text: "creador", value: "", ico : "person", chip : true}
+          ],
+          isSaveRelationship : false,
+
+          //tabs relationship the objects
+          responseRelationshipTabs : [],
+
+          //data for tables of relationship
+          dataTableRelationship : {
+            idObjectRelationship : 0,
+            headersTableRelationship: [],
+            headersDefaultRelationship: [{ text: "Actions", value: "action", sortable: false }],
+            actionsTableRelationship: [{ icon: "visibility", value: "detailItem"}],
+            dataTable : [],
+            dataTableCount : 0,
+            dataPaginator : { pageCount: 0 , pageIni: 1 },
+            itemsPerPage: 8
+          },
+
+          //data TabsProcess
+          activities : [],
+          historical : [],
+          titleTabsProcess : "",
+          existProcess : false,
 
       }
   }, 
   async mounted() {
+      //get item detail for object
       await this.getDetailItem();
-      this.structureDataField();
+      //Structure data for the TableDetail component
+      this.propsGroup = this.structureDataField(this.dataDetail);
+      //Get related objects of detail
+      await this.createTableRelationship();
   },
    components: {
     ToolbarGeneral,
     FormGeneral,
-    Navbar
+    Navbar,
+    TableDetail,
+    TabsRelationship,
+    TabsProcess
   },
   methods: {
-        async getDetailItem(){
 
-            let dataPropListValues = await this.getpropertyFieldValuesObject(this.$route.params.idObject,this.$route.params.idDetail );
+    /*---------------------------------------------------
+    Name: getDetailItem
+    Description: get item detail of item general object
+    Alters component: TableDetail
+    ---------------------------------------------------*/
+    async getDetailItem(){
 
-            if(dataPropListValues.code == 'OK'){
-              debugger
-              this.dataDetail = dataPropListValues.data.data;
-              this.titleObject = this.dataDetail[0]['representation'];
-              this.codeTitle = this.$route.params.idDetail;
-
-              //set values for component ToolbarGeneral
-              this.headersDetail[0].value = dataPropListValues.data['created_date'];
-              this.headersDetail[1].value = dataPropListValues.data['modified_date'];
-              this.headersDetail[2].value = "sergio Aguilera";
-
-            }
-        },
-
-        structureDataField(){
+        let dataPropListValues = await this.getpropertyFieldValuesObject( this.$route.params.idObject, this.$route.params.idDetail );
         
-        let groupId = [];
-        if(this.dataDetail ){
-            this.propsGroup = [];
-            let arrayTemp = [];
-            let arrayGroup = [];
-            let countData = this.dataDetail.length;
-            let countInt = 0;
-            
+        if(dataPropListValues.code == 'OK'){
+          this.dataDetail = dataPropListValues.data.data;
+          this.titleObject = this.dataDetail[0]['representation'];
+          this.codeTitle = this.$route.params.idDetail;
 
-            this.dataDetail.forEach(ele => {                 
-                let register = false;
-                if ( ele.object_group.id != groupId.id && groupId.id != undefined  ){
-                    
-                    arrayGroup = groupId;
-                    arrayGroup['fields']= arrayTemp;
-                    //this.propsGroup[countInt] = arrayGroup ;
-                    this.propsGroup.push( arrayGroup );
-                    arrayTemp = [];
-                    arrayGroup=[];
-                    register = true;
-                    //prueba = this.propsGroup;
-                    
-                }
-                arrayTemp.push(ele);
-                groupId = ele.object_group;
-                countInt++;
+          //set values for component ToolbarGeneral
+          this.headersDetail[0].value = dataPropListValues.data['created_date'];
+          this.headersDetail[1].value = dataPropListValues.data['modified_date'];
+          this.headersDetail[2].value = "sergio Aguilera";
 
-                if(countInt == countData ){
-                    arrayGroup = groupId;
-                    arrayGroup['fields']= arrayTemp;
-                    this.propsGroup.push( arrayGroup );
-                    //this.propsGroup[countInt] = arrayGroup;
-                    //prueba = this.propsGroup;
-                }
-            });
-
+          //validate if object exist process 
+          if( dataPropListValues.data.process.activities.length > 0 ){
+            this.existProcess = true;
+            this.titleTabsProcess = i18n.t('detailGeneral.titleTabsProcess');
+            this.activities = dataPropListValues.data.process.activities;
+            this.historical = dataPropListValues.data.process.historical;
+          }
 
         }
-
-        //console.log('final',this.propsGroup)
     },
 
-    //Activate Modal the creation new item
-    toggleModal(action = "",pk="") {
+    /*---------------------------------------------------
+    Name: createTableRelationship
+    Description: Create the tabs and tables for the functioning of the relationships
+    Alters component: 
+    ---------------------------------------------------*/
+    async createTableRelationship (){
+      
+      //Get related objects of detail
+      await this.getRelationshipObjectItem();
+      //Validate if there is a relationship to request data
+      if(this.responseRelationshipTabs.length > 0){
+        await this.getDataObjectRelationship( this.responseRelationshipTabs[0].object_child );
+      }
+
+    },
+
+    /*---------------------------------------------------
+    Name: getRelationshipObjectItem
+    Description: Get related objects
+    Alters component: 
+    ---------------------------------------------------*/
+    async getRelationshipObjectItem (){
+      
+      //get list of object relationship visibles witch parent object
+      let dataListReleationship = await this.getRelationshipObjects( this.$route.params.idObject,'1');
+
+      if(dataListReleationship.code == 'OK'){
+        this.responseRelationshipTabs = dataListReleationship.data.data;
+      }
+
+    },
+
+    /*---------------------------------------------------
+      Name: getRelationshipObjectItem
+      Description: Gets the data information of the child object
+      Alters component: TableGeneral
+      ---------------------------------------------------*/
+      async getDataObjectRelationship ( objChild ){
+
+        //Get Data API of object
+        let dataValueList = await this.getDataObjectList( 
+          objChild, 
+          0, 
+          this.dataTableRelationship.itemsPerPage, 
+          {
+            parentRelationship : this.$route.params.idObject,
+            pkParentRelationship : this.$route.params.idDetail
+          }
+        );
+
+        if(dataValueList.code == 'OK'){
+          
+          this.dataTableRelationship.idObjectRelationship = objChild;
+          this.dataTableRelationship.dataTable = dataValueList.data.data;
+          this.dataTableRelationship.dataTableCount = dataValueList.data.count;
+          this.dataTableRelationship.dataPaginator.pageCount = this.generateCounPaginator( this.dataTableRelationship.dataTableCount, this.dataTableRelationship.itemsPerPage );
+          this.dataTableRelationship.dataPaginator.pageIni = 1;
+
+          //Get field for list
+          let dataPropertyList = await this.getpropertyFieldObject( objChild, 'visible' );
+
+          if(dataPropertyList.code == 'OK'){
+
+            var arrTempHeader = [];
+            var jsonDataHeader = {};
+
+            dataPropertyList.data.data.forEach((element) => {
+              jsonDataHeader = {
+                text: element.description,
+                value: element.name,
+              };
+              arrTempHeader.push(jsonDataHeader);
+            });
+
+            this.dataTableRelationship.headersTableRelationship = arrTempHeader.concat( this.dataTableRelationship.headersDefaultRelationship );
+          }
+        }
+      },
+
+    /*---------------------------------------------------
+    Name: toggleModal
+    Description: Activate Modal the creation new item
+    Alters component: ToolbarGeneral
+    ---------------------------------------------------*/
+    async toggleModal(action = "",pk="", save = false,  idObject = null, relationship = false) {
+      
       //Defined parms for model
+      if( idObject == null )
+          this.actualObjectForm = this.$route.params.idDetail;
+      else
+          this.actualObjectForm = idObject;
+
+      this.isSaveRelationship =  relationship;
       this.operationModel.action = action;
       this.operationModel.pk = pk;
       this.visibilityModal = !this.visibilityModal;
-    }
+
+      if(save){
+        if(!relationship){
+          await this.getDetailItem();
+          this.propsGroup = this.structureDataField(this.dataDetail);
+        }else{
+          await this.listenerChangePage( this.dataTableRelationship.dataPaginator.pageIni );
+        }
+      }  
+    },
+
+    /*---------------------------------------------------
+    Name: listenerChangePage
+    Description: Listen and update the information according to the pager
+    Alters component: TabsRelationship
+    ---------------------------------------------------*/
+    async listenerChangePage( page ){
+      let resultCountPage = this.calculateCountPage( page, this.dataTableRelationship.itemsPerPage );
+
+      let dataValueList = await this.getDataObjectList( 
+        this.dataTableRelationship.idObjectRelationship, 
+        resultCountPage.ini, 
+        resultCountPage.limit,
+        {
+          parentRelationship : this.$route.params.idObject,
+          pkParentRelationship : this.$route.params.idDetail
+        } 
+      );
+
+      if(dataValueList.code == 'OK'){
+        this.dataTableRelationship.dataPaginator.pageIni = page
+        this.dataTableRelationship.dataTable = dataValueList.data.data;
+        this.dataTableRelationship.dataPaginator.pageCount  = this.generateCounPaginator( this.dataTableRelationship.dataTableCount, this.dataTableRelationship.itemsPerPage );
+      }
+    },
+
+    /*---------------------------------------------------
+    Name: listenerChangeTabs
+    Description: listen to the change of tabs and brings the corresponding information
+    Alters component: TabsRelationship
+    ---------------------------------------------------*/
+    async listenerChangeTabs( objeIdChild ){
+      //Update data in table of relationship
+      await this.getDataObjectRelationship( objeIdChild );
+    },
+
+    /*---------------------------------------------------
+    Name: listenerActionTable
+    Description:  Listen when pressing a button on the table to execute an action
+    Alters component: TabsRelationship
+    ---------------------------------------------------*/
+    async listenerActionTable( sendFunction, item ){
+      switch (sendFunction) {
+        case 'detailItem':
+          this.$router.push('/general/'+this.dataTableRelationship.idObjectRelationship+'/detail/'+item.pk);
+          break;
+        case 'editItem':
+          this.toggleModal('edit',item.pk, false, this.dataTableRelationship.idObjectRelationship, true );
+          break;
+         case 'addItem':
+          this.toggleModal('add',null, false, this.dataTableRelationship.idObjectRelationship, true );
+          break;
+      }
+    },
 
   },
-  mixins: [apiMixins]
+  mixins: [apiMixins, processData]
   
 }
 </script>
-
-<style scoped>
-
-.some-style >>> .v-input__slot::before {
-  border-style: none !important;
-}
-
-.divider-group{
-  margin-bottom: 10px;
-}
-
-
-</style>
-
-
-<style >
-
-.theme--light.v-label--is-disabled{
-  color: rgba(0, 0, 0, 0.87) !important;
-  font-size: 18px;
-}
-
-.theme--light.v-input--is-disabled input, .theme--light.v-input--is-disabled textarea {
-  color: rgb(0 0 0) !important;
-}
-
-.theme--light.v-input--is-disabled .v-input__prepend-outer{
-  margin-top: 0px;
-
-}
-
-</style>

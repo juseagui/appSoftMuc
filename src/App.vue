@@ -2,7 +2,7 @@
   <v-app>
      <v-main>
       <router-view :key="$route.fullPath" />
-<v-main>
+    <v-main>
       <v-dialog
             v-model="loading.estado"
             hide-overlay

@@ -1,21 +1,19 @@
-
 <template>
-  <v-app id="inspire">
-    <v-content>
+  <v-app>
+    <v-main>
       <v-container class="fill-height" fluid>
-        <v-row align="center" justify="center">
+        <v-row  justify="center">
           <v-col cols="12" sm="8" md="8">
             <v-card class="elevation-12">
-              <v-window v-model="step">
-                <v-window-item :value="1">
+             
                   <v-row  >
                     <v-col cols="12" md="8" >
                       <v-card-text class="mt-12">
                         <h1
-                          class="text-center display-2 teal--text " color = "primary"
+                          class="text-center display-2 color-text-login"
                         >{{ $t('loginPage.welcome') }}</h1>
                         
-                        <h4 class="text-center mt-4">{{ $t('loginPage.msgEmailEnsure') }}</h4>
+                        <h4 class="text-center mt-4 color-text-login">{{ $t('loginPage.msgEmailEnsure') }}</h4>
                         <v-form @submit="login" lazy-validation ref="form" v-model="valid">
                           <v-text-field
                             v-model = "username"
@@ -51,7 +49,7 @@
                             </v-alert>
                           </transition>
 
-                          <h3 class="text-center mt-4">{{ $t('loginPage.ForgotPass') }} </h3>
+                          <h3 class="text-center mt-4 color-text-login">{{ $t('loginPage.ForgotPass') }} </h3>
 
                           <div class="text-center mt-3">
                             <!-- btn login -->
@@ -61,79 +59,26 @@
                       </v-card-text>
                      
                     </v-col>
-                    <v-col cols="12" md="4" class="primary" >
-                      <v-card-text class="white--text mt-12">
+                    <v-col cols="12" md="4" class="primary " >
+                      <v-card-text class="white--text mt-12 justify-center">
                         <h1 class="text-center display-1">{{ $t('loginPage.titleWelcome') }}</h1>
                         <h5
                           class="text-center"
                         > {{ $t('loginPage.msgWelcome') }}</h5>
                       </v-card-text>
                       <div class="text-center">
-                        <v-btn rounded outlined dark @click="step++">{{ $t('loginPage.signUp') }}</v-btn>
                       </div>
                     </v-col>
                   </v-row>
-                </v-window-item>
-                <v-window-item :value="2">
-                  <v-row class="fill-height">
-                    <v-col cols="12" md="4" class="primary">
-                      <v-card-text class="white--text mt-12">
-                        <h1 class="text-center display-1">{{ $t('registerPage.welcome') }}</h1>
-                        <h5
-                          class="text-center"
-                        >{{ $t('registerPage.msgWelcome') }}</h5>
-                      </v-card-text>
-                      <div class="text-center">
-                        <v-btn rounded outlined dark @click="step--">{{ $t('registerPage.welcome') }}</v-btn>
-                      </div>
-                    </v-col>
-
-                    <v-col cols="12" md="8">
-                      <v-card-text class="mt-12">
-                        <h1 class="text-center display-2 teal--text" color = "primary">Create Account</h1>
-                      
-                        <h4 class="text-center mt-4">{{ $t('registerPage.msgWelcome') }}</h4>
-                        <v-form>
-                          <v-text-field
-                            label="Name"
-                            name="Name"
-                            prepend-icon="person"
-                            type="text"
-                            color="secondary"
-                          />
-                          <v-text-field
-                            label="Email"
-                            name="Email"
-                            prepend-icon="email"
-                            type="text"
-                            color="secondary"
-                          />
-
-                          <v-text-field
-                            id="password"
-                            label="Password"
-                            name="password"
-                            prepend-icon="lock"
-                            type="password"
-                            color="secondary"
-                          />
-                        </v-form>
-                        
-
-                      </v-card-text>
-
-                      <div class="text-center mt-n5">
-                        <v-btn rounded color="primary" class = "btn_person_login" @click="login"  dark>{{ $t('registerPage.signUp') }}</v-btn>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-window-item>
-              </v-window>
+              
             </v-card>
           </v-col>
         </v-row>
+
+         
+
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
@@ -143,6 +88,7 @@
 import axios from "axios";
 import {mapMutations} from "vuex";
 import i18n from '../i18n';
+import {apiMixins} from '@/mixins/apiMixins.js'
  
   export default {
   data: () => ({
@@ -167,47 +113,39 @@ import i18n from '../i18n';
         this.$refs.form.validate()
       },
     async login(){
+        
         var payload = {
           username: this.username,
           password: this.password
         };
+
         this.msgLoading = i18n.t('msgLoading.loginSystem');
         this.mostrarLoading({ titulo : this.msgLoading  });
         this.loading = true;
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        await this.axios.post('/login/', payload )
-        .then( response =>{
-          console.log(response.data.token);
-          localStorage.setItem('token', response.data.token );
-          localStorage.setItem('refresh_token', response.data.refresh_token );
-          localStorage.setItem('username', response.data.user.username );
-          localStorage.setItem('last_name', response.data.user.last_name );
-          localStorage.setItem('email', response.data.user.email );
-          localStorage.setItem('id', response.data.user.id );
+        
+        let response = await this.AuthenticateUser(payload);
+        if(response.code == 'OK'){
           axios.defaults.headers.common['Authorization'] = 'Bearer '+response.data.token;
-          this.$store.dispatch("login", response.data.user.username );
+          this.$store.dispatch("login", response.data.user );
+
+          //get property permissons objects
+          let responseObjects = await this.getObjectsPermissions();
+          
+          if(responseObjects.code == 'OK'){
+              //set objects permision store in vuex
+              this.$store.dispatch("setObjectsPermissions", responseObjects.data.data );
+          }
+
           this.loading = false;
           this.$router.push('/home');
-          
-        })
-        .catch(error=>{
-          var data = error.response;
-          debugger
-          //Valid response login backend
-          if( error.response?.data?.error == "LOGIN_ERROR" ){
-            this.showAlertLogin = true;
-            this.finallyMsgError();
-            
-          }else{
-            this.showAlertLogin = true;
-            this.finallyMsgError();
-            console.log('Error general');
-          }
-          console.log(data);
-        })
-        .finally(
-           this.ocultarLoading()
-        )
+        }else{
+          this.showAlertLogin = true;
+          this.finallyMsgError();
+          console.log('Error general');
+        }
+
+        //Finish
+        this.ocultarLoading();
 
     },
     finallyMsgError(){
@@ -217,7 +155,8 @@ import i18n from '../i18n';
             },4000)
     }
 
-  }
+  },
+  mixins: [apiMixins]
 };
 </script>
 
@@ -242,5 +181,22 @@ import i18n from '../i18n';
   .theme--dark.v-btn.v-btn--disabled.v-btn--has-bg {
     background-color: rgba(0,0,0,.12) !important;
   }
+
+  .color-text-login{
+    color: var(--v-primary-base);
+  }
+
+</style>
+
+<style>
+
+  .v-label{
+      font-family: Roboto !important;
+      font-size: 17px !important;
+      font-weight: 400 !important;
+      line-height: 20px !important;
+      color: var(--v-textInput-base) !important;
+  }
+
 
 </style>

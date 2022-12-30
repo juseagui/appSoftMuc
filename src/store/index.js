@@ -11,7 +11,22 @@ export default new Vuex.Store({
     },
     dataLoginUser : {
       username: null,
+      initialName : null,
+      email : null,
       auth: false
+    },
+    objectsPermissions : [],
+    navigateObject : {
+      objeIdActual : 0
+    },
+    process : {
+      activityActual : {},
+      listState : [
+        { code : 1, description : 'Iniciado', color : 'blue', icon : 'email'  },
+        { code : 2, description : 'En proceso', color : 'yellow', icon : 'email' },
+        { code : 3, description : 'Ganada', color : 'green',  icon : 'email' },
+        { code : 4, description : 'Perdida', color : 'red', icon : 'email'  }
+      ]
     }
   },
   mutations: {
@@ -22,21 +37,47 @@ export default new Vuex.Store({
     ocultarLoading(state){
       state.loading.estado = false
     },
-    login(state, username, token) {
+    login(state, userLogin, token) {
       state.dataLoginUser.auth = true;
-      state.dataLoginUser.username = username;
+      state.dataLoginUser.username = userLogin.username;
+      state.dataLoginUser.email = userLogin.email;
+    },
+    setInitialName(state, initialName ){
+      state.dataLoginUser.initialName = initialName;
     },
     logout(state) {
       state.dataLoginUser.auth = false;
       state.dataLoginUser.username = null;
-    }
+    },
+    setObjectsPermissions(state, objectPropertys ){
+      state.objectsPermissions = objectPropertys;
+    },
+    setObjectsActual(state, objeIdActual ){
+      state.navigateObject.objeIdActual = objeIdActual;
+    },
+    setActivityActual(state, activityActual ){
+      state.process.activityActual = activityActual;
+    },
+
   },
   actions: {
-    login({ commit },username, token){
-      commit("login", username, token);
+    login({ commit },userLogin, token){
+      commit("login", userLogin, token);
+    },
+    setInitialName({ commit }, initialName ){
+      commit("setInitialName", initialName);
     },
     logout({ commit }){
       commit("logout");
+    },
+    setObjectsPermissions({ commit },objectPropertys ){
+      commit("setObjectsPermissions", objectPropertys);
+    },
+    setObjectsActual({ commit },objeIdActual ){
+      commit("setObjectsActual", objeIdActual);
+    },
+    setActivityActual({ commit },activityActual ){
+      commit("setActivityActual", activityActual);
     }
   },
   modules: {

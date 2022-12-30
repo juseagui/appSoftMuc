@@ -19,7 +19,23 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/General/General.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/General/ListGeneral.vue')
+  },
+  {
+    path: '/object/:idObject',
+    name: 'Object',
+    meta: {
+      requiresAuth: true
+    },
+    component: () => import(/* webpackChunkName: "about" */ '../views/Object/ListObjects.vue')
+  },
+  {
+    path: '/process/:idObject',
+    name: 'Process',
+    meta: {
+      requiresAuth: true
+    },
+    component: () => import('../views/Process/ListProcess.vue')
   },
   {
     path: '/home/',
@@ -27,21 +43,15 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Home.vue')
+    component: () => import('../views/Report/HomeReport.vue')
   },
   {
-    path: '/user/',
+    path: '/user/:idObject/userDetail/:idDetail',
     name: 'User',
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/User/User.vue')
+    component: () => import('../views/User/User.vue')
   },
   {
     path: '/general/:idObject/detail/:idDetail',
@@ -49,11 +59,25 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/General/DetailGeneral.vue')
+    component: () => import('../views/General/DetailGeneral.vue')
   },
+  {
+    path: '/object/:idObject/detail/:idDetail',
+    name: 'DetailObject',
+    meta: {
+      requiresAuth: true
+    },
+    component: () => import('../views/Object/DetailObject.vue')
+  },
+  
+  {
+    path: '/system',
+    name: 'SystemGeneral',
+    meta: {
+      requiresAuth: true
+    },
+    component: () => import('../views/General/SystemGeneral.vue')
+  }
 ]
 
 const router = new VueRouter({

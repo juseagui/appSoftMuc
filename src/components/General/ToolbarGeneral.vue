@@ -3,7 +3,7 @@
         
         <v-toolbar-title>
           <b>{{ titleObject }}</b>
-          <v-row dense v-show="source == 'detailGeneral'" >
+          <v-row dense v-show="source == 'detailGeneral' || source == 'detailObject'" >
             <v-col style = "    font-weight: 500; letter-spacing: 0.0125em !important; font-size: 0.83em;" >
               <v-icon dense>hotel_class</v-icon>
               {{codeTitle}}
@@ -16,12 +16,16 @@
         <v-btn icon @click="$router.go(-1)">
           <v-icon>keyboard_return</v-icon>
         </v-btn>
-        <v-btn icon v-show="source == 'general'">
+        <v-btn icon @click="toggleModalViewFilter" v-show="source == 'ListGeneral'">
           <v-icon>search</v-icon>
         </v-btn>
         <v-btn icon @click="toggleModalViewEdit"
-        v-show="source == 'detailGeneral'">
+        v-show=" activeBtnEdit && (source == 'detailGeneral' || source == 'detailObject') ">
           <v-icon>edit_note</v-icon>
+        </v-btn>
+        <v-btn icon @click="toggleModalRelationship"
+        v-show="source == 'detailObject'">
+          <v-icon>view_quilt</v-icon>
         </v-btn>
  
         <v-spacer></v-spacer>
@@ -43,21 +47,32 @@
           <div class="text-overline-person">
             {{item.text}}
           </div>
-            <v-list-item-title class=" mb-1">
+
+          
+            <v-list-item-title v-if="item.chip == false" class=" mb-1">
               <v-icon dense>{{item.ico}}</v-icon>
             <b>{{item.value}}</b>
+            </v-list-item-title>
+
+            <v-list-item-title v-else="item.chip == false" class=" mb-1">
+              <v-chip
+              color="primary"
+              pill
+              >
+              {{item.value}}
+                <v-icon>
+                  {{item.ico}}
+                </v-icon>
+            </v-chip>
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         
       </v-card>
 
-
-        <v-btn color="primary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'general'">
-          {{ $t("viewGeneral.btnAdd") }}
+        <v-btn v-if="activeBtnAdd" color="secondary" dark class="mb-2" @click="toggleModalViewAdd" v-show="source == 'ListGeneral'">
+         <v-icon small :left="true">add</v-icon> {{ $t("viewGeneral.btnAdd")}}
         </v-btn>
-
-
 
       </v-toolbar>
 </template>
@@ -66,28 +81,90 @@
 
 
 export default {
- name: "toolbarGeneral",
- data() {
-   return {
-     param : ""
-   }
- },
- props: ['titleObject','codeTitle','source','headersDetail'],
- methods: {
+  name: "toolbarGeneral",
+  props: ['titleObject','codeTitle','source','headersDetail'],
+  data() {
+    return {
+      param : "",
+      activeBtnAdd : true,
+      activeBtnEdit : true,
+    }
+  },
+  mounted() {
+    this.validatePermissionObject();
+  },
+  methods: {
+    /*---------------------------------------------------
+    Name: toggleModalViewAdd
+    Description: 
+    Alters component: 
+    ---------------------------------------------------*/
     toggleModalViewAdd() {
       Object.assign(this.$data, this.$options.data.call(this));
-      this.$emit('listenerToolbar', 'add'); 
+      this.$emit('listenerToolbar', 'add', null, false); 
     },
+
+    /*---------------------------------------------------
+    Name: toggleModalViewEdit
+    Description:
+    Alters component: 
+    ---------------------------------------------------*/
     toggleModalViewEdit() {
-      console.log('editar1');
       Object.assign(this.$data, this.$options.data.call(this));
-      this.$emit('listenerToolbar', 'edit', this.codeTitle); 
-    }
+      this.$emit('listenerToolbar', 'edit', this.codeTitle, false, this.$route.params.idObject); 
+    },
+
+     /*---------------------------------------------------
+    Name: toggleModalViewEdit
+    Description:
+    Alters component: 
+    ---------------------------------------------------*/
+    toggleModalViewFilter() {
+      Object.assign(this.$data, this.$options.data.call(this));
+      this.$emit( 'listenerToolbarFilter' ); 
+    },
+
+    /*---------------------------------------------------
+    Name: toggleModalRelationship
+    Description:
+    Alters component: 
+    ---------------------------------------------------*/
+    toggleModalRelationship() {      
+      Object.assign(this.$data, this.$options.data.call(this));
+      this.$emit( 'listenerToolbarRelationship' ); 
+    },
+
+    /*---------------------------------------------------
+    Name: validatePermissionObject
+    Description: 
+    Alters component: 
+    ---------------------------------------------------*/
+    validatePermissionObject() {
+      
+      let routeActual = this.$route.params.idObject;
+      let foundValueFull = null
+      this.$store.state.objectsPermissions.filter(
+        function (category) {
+           let foundValue = category.category_object.find( object => object.id == routeActual );
+           if(foundValue != 'undefined' &&  foundValue != null )
+            foundValueFull = foundValue;
+            return  true;
+        });
+        
+        //Validate permision ADD
+        if(foundValueFull)
+          if(foundValueFull.object_rol[0].add_data != "1")
+            this.activeBtnAdd = false;
+          if(foundValueFull.object_rol[0].edit_data != "1")
+            this.activeBtnEdit = false;
+    },
+        
  }
 }
 </script>
-<style scoped>
 
+
+<style scoped>
     .toolbar-margin-person {
     margin-top: 6px;
     margin-bottom: 10px;
@@ -98,7 +175,6 @@ export default {
       font-weight: 500;
       font-family: "Roboto", sans-serif !important;
       text-transform: uppercase !important;
-      /*text-align: center;*/
     }
 
     .style-card-person:after{
