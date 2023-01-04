@@ -23,7 +23,7 @@ export default {
         options : {
             pieHole: 0.2,
             width: 600,
-            height: 600,
+            height: 600
         }
 
     }),

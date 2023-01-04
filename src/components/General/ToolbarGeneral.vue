@@ -3,7 +3,7 @@
         
         <v-toolbar-title>
           <b>{{ titleObject }}</b>
-          <v-row dense v-show="source == 'detailGeneral' || source == 'detailObject'" >
+          <v-row dense v-show="source == 'detailGeneral' || source == 'detailObject' || source == 'detailUser'" >
             <v-col style = "    font-weight: 500; letter-spacing: 0.0125em !important; font-size: 0.83em;" >
               <v-icon dense>hotel_class</v-icon>
               {{codeTitle}}
@@ -20,12 +20,16 @@
           <v-icon>search</v-icon>
         </v-btn>
         <v-btn icon @click="toggleModalViewEdit"
-        v-show=" activeBtnEdit && (source == 'detailGeneral' || source == 'detailObject') ">
+        v-show=" activeBtnEdit && (source == 'detailGeneral' || source == 'detailObject' || source == 'detailUser' ) ">
           <v-icon>edit_note</v-icon>
         </v-btn>
         <v-btn icon @click="toggleModalRelationship"
         v-show="source == 'detailObject'">
           <v-icon>view_quilt</v-icon>
+        </v-btn>
+        <v-btn icon @click="toggleModalChangePassword"
+        v-show="source == 'detailUser'">
+          <v-icon>lock_reset</v-icon>
         </v-btn>
  
         <v-spacer></v-spacer>
@@ -132,6 +136,17 @@ export default {
     toggleModalRelationship() {      
       Object.assign(this.$data, this.$options.data.call(this));
       this.$emit( 'listenerToolbarRelationship' ); 
+    },
+
+    /*---------------------------------------------------
+    Name: toggleModalChangePassword
+    Description:
+    Alters component: 
+    ---------------------------------------------------*/
+    toggleModalChangePassword() {   
+      console.log("🚀 ~ file: ToolbarGeneral.vue:149 ~ toggleModalChangePassword ~ this.$data")
+      Object.assign(this.$data, this.$options.data.call(this));
+      this.$emit( 'listenerToolbarChangePassword' ); 
     },
 
     /*---------------------------------------------------

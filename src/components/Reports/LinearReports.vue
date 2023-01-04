@@ -14,20 +14,15 @@ import { GChart } from 'vue-google-charts'
 
 export default {
     name: 'LinearReports',
+
+    props: ['data'],
     data: () => ({
         type : 'LinearChart',
         chartsLib: null,
         
-        data :  [
-            ["Mes", "Cantidad de oportunidades"],
-            ['agosto', 2],
-            ['septiembre', 1],
-            ['octubre', 3],
-        ],
-        
         options : {
             vAxis: {
-                title: 'Numero de oportunidades',
+                title: 'Cantidad de oportunidades',
                 logScale: false,
             },
             hAxis: {

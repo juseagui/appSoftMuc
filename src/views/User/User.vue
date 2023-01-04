@@ -47,14 +47,6 @@
             <v-tab key="One">
               Datos de Usuario
             </v-tab>
-            <!--
-            <v-tab key="two">
-              Calendario
-            </v-tab>
-            <v-tab key="Three">
-              Notificaciones
-            </v-tab>
-           -->
           </v-tabs>
           
         </template>
@@ -75,13 +67,16 @@
           :codeTitle="codeTitle" 
           :source="source" 
           :headersDetail="headersDetail"
-          @listenerToolbar="toggleModal"  />
+          @listenerToolbar="toggleModal"
+          @listenerToolbarChangePassword="toggleModalChangePassword"  />
 
           <TableDetail :dataField="propsGroup"  />
 
           <!-- Componente modal para creación y edicion de registros -->
           <FormGeneral :openModal="visibilityModal" :operationModel="operationModel" :idObject="actualObjectForm" :source="source" :isRelationship="false"
           @listenerModal="toggleModal" />
+
+          <FormChangePassword :openModal="visibilityChangePass" @listenerModal="toggleModalChangePassword"  />
           
         </v-card>
       </v-tab-item>
@@ -110,11 +105,11 @@
 
 <script>
 import Navbar from "@/components/General/Navbar";
-import TabsUser from "@/components/User/TabsUser";
 import CalendarUser from "@/components/User/CalendarUser";
 import ToolbarGeneral from "@/components/General/ToolbarGeneral";
 import FormGeneral from "@/components/General/FormGeneral";
 import TableDetail from "@/components/General/TableDetail";
+import FormChangePassword from "@/components/User/FormChangePassword";
 
 //import mixins
 import {apiMixins} from '@/mixins/apiMixins.js'
@@ -128,7 +123,7 @@ export default {
       tabUser : null,
       codeTitle : "",
       titleObject : "",
-      source : "detailGeneral",
+      source : "detailUser",
       
       //Data object field -> value
       dataDetail : [],
@@ -143,6 +138,9 @@ export default {
         {text: "creador", value: "", ico : "person", chip : true}
       ],
       actualObjectForm : this.$route.params.idObject,
+
+      //params for modal change password
+      visibilityChangePass : false,
 
       //data component
       emailUser : "",
@@ -159,11 +157,11 @@ export default {
 
   components: {
     Navbar,
-    TabsUser,
     CalendarUser,
     ToolbarGeneral,
     FormGeneral,
-    TableDetail
+    TableDetail,
+    FormChangePassword
   },
 
   methods : {
@@ -183,10 +181,26 @@ export default {
           }
       },
 
+      /*---------------------------------------------------
+      Name: toggleModal
+      Description: Interact with user update modal
+      Alters component: 
+      ---------------------------------------------------*/
+
       async toggleModal(action = "edit",pk=this.codeTitle, save = false) {
         this.operationModel.action = action;
         this.operationModel.pk = pk;
         this.visibilityModal = !this.visibilityModal;
+      },
+
+      /*---------------------------------------------------
+      Name: toggleModalChangePassword
+      Description: Interact with change password modal
+      Alters component: 
+      ---------------------------------------------------*/
+      async toggleModalChangePassword() {
+        console.log("🚀 ~ file: User.vue:203 ~ toggleModalChangePassword ~ toggleModalChangePassword");
+        this.visibilityChangePass = !this.visibilityChangePass;
       }
 
   },

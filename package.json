@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
+    "start": "SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\""
   },
   "dependencies": {

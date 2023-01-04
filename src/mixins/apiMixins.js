@@ -405,7 +405,30 @@ export const apiMixins = {
 
             return responseApi;            
             
-        }
+        },
+
+        // Reports
+        async getReportProcess( idReport, resource = 'process' ){
+            
+            let responseApi = {};
+            await this.axios
+            .get( "/objects/reports/" + resource + "/"+idReport )
+            .then((response) => {
+                responseApi.data = response.data;
+                responseApi.code = 'OK';
+                responseApi.msg = "";
+            })
+            .catch((error) => {
+                responseApi.data = [];
+                responseApi.code = 'ERROR';
+                responseApi.msg = error.response.data;
+                //console.log(data);
+            });
+            
+            return responseApi;  
+
+        },
+
 
     }
 };

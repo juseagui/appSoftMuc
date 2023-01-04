@@ -11,10 +11,10 @@
                     <!-- graficos dinamicos -->
                     <v-col cols="12" md="12" >
                       <h1 class="headline mb-2 grey--text"> Estado de proceso comercial </h1>
-                      <v-row>
+                      <v-row >
                         <v-col lg="3" cols="sm" class="pa-2" v-for="(state, index) in dataProcessCount" :key="index">
                           <v-card>
-                            <v-row class="no-gutters">
+                            <v-row class="no-gutters container-process-card">
                                 <div class="col-auto">
                                     <div :class="listStateGlobal.find(element => element.code == state.process_state ) == undefined ? 'cyan' 
                                         : listStateGlobal.find(element => element.code == state.process_state ).color + ' fill-height'">&nbsp;</div>
@@ -30,15 +30,26 @@
                         </v-col>
                         
                       </v-row>
+
+                    <v-row>
+                    <v-col cols="12" md="12">
+                      <v-card  class="dark" min-height="252">
+                          <v-card-title class="primary--text">
+                              Cantidad y aporte ventas por actividades
+                          </v-card-title>
+                        <v-card-text>
+                          <ColumnReports :data="dataStateForActivity" ></ColumnReports>
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                  </v-row>
                       
                     </v-col>
-                    <!-- graficos dinamicos -->
-
                       <!-- Listas dinamicas -->
                     
                     <v-col cols="6" md="6">
                       <v-card >
-                        <v-list >  
+                        <v-list class="container-process-card" >  
                             <div v-for="(state, index) in dataValuesProcess" :key="index">
                             <v-list-item>
                               <v-list-item-avatar :color="listStateGlobal.find(element => element.code == state.process_state ) == undefined ? 'white' 
@@ -51,7 +62,7 @@
                                         : listStateGlobal.find(element => element.code == state.process_state ).description  }}</v-list-item-title>
                               </v-list-item-content>
                                 <v-list-item-content align="right">
-                                <v-list-item-title class="primary--text">${{state.value_total}}</v-list-item-title>
+                                <v-list-item-title class="primary--text">{{convertCurrency(state.value_total)}}</v-list-item-title>
                                 <v-list-item-subtitle>Cantidad : {{state.count_act}}</v-list-item-subtitle>
                               </v-list-item-content>
                             </v-list-item>
@@ -62,8 +73,8 @@
                     </v-col>
                     <!-- Listas dinamicas -->
               
-                    <v-col cols="6" md="6">
-                      <v-card class="dark" min-height="252">
+                    <v-col cols="6" md="6" >
+                      <v-card class="dark container-process-card" min-height="252">
                           <v-card-title class="primary--text">
                               Programas
                             </v-card-title>
@@ -80,7 +91,7 @@
                                         <div>
                                             <h2 class="cyan--text"> {{ program.description_program }} </h2>
                                             <p class="mt-1"></p>
-                                            <h3 class="mb-0">$ {{ program.value_total }}  <i class="mdi mdi-36px mdi-credit-card-outline float-right"></i></h3>
+                                            <h3 class="mb-0"> {{ convertCurrency(program.value_total) }}  <i class="mdi mdi-36px mdi-credit-card-outline float-right"></i></h3>
                                             <p>Cantidad : {{ program.count_program }}</p>
                                         </div>
                                     </div>
@@ -100,24 +111,13 @@
                               Numero de oportunidades por mes
                           </v-card-title>
                         <v-card-text>
-                          <LinearReports></LinearReports>
+                          <LinearReports  :data="dataStateCountProcess" ></LinearReports>
                         </v-card-text>
                       </v-card>
                     </v-col>
                   </v-row>
 
-                  <v-row>
-                    <v-col cols="12" md="12">
-                      <v-card class="dark" min-height="252">
-                          <v-card-title class="primary--text">
-                              Cantidad y aporte ventas por actividades
-                          </v-card-title>
-                        <v-card-text>
-                          <ColumnReports></ColumnReports>
-                        </v-card-text>
-                      </v-card>
-                    </v-col>
-                  </v-row>
+                  
 
                 </v-container>
                 </v-col>
@@ -137,69 +137,26 @@ import ChartReports from '@/components/Reports/ChartReports'
 import LinearReports from '@/components/Reports/LinearReports'
 import ColumnReports from '@/components/Reports/ColumnReports'
 
+//import mixins
+import {apiMixins} from '@/mixins/apiMixins.js';
+import {processData} from '@/mixins/processData.js';
+
+
 
 export default {
   
   data: () => ({
-      dataProcessCount : [
-        {
-            "count_act": 1,
-            "process_state": "1"
-        },
-        {
-            "count_act": 4,
-            "process_state": "2"
-        },
-        {
-            "count_act": 1,
-            "process_state": "3"
-        },
-        {
-            "count_act": 4,
-            "process_state": "4"
-        }
+      dataProcessCount : [],
+      dataValuesProcess : [],
+      dataProgramValue : [],
+      dataStateCountProcess : [
+        ["Mes", "Cantidad de oportunidades"]
       ],
-
-      dataValuesProcess : [
-        {
-            "count_act": 1,
-            "process_state": "1",
-            "value_total": 4000000.0
-        },
-        {
-            "count_act": 1,
-            "process_state": "2",
-            "value_total": 4000000.0
-        },
-        {
-            "count_act": 1,
-            "process_state": "3",
-            "value_total": 4000000.0
-        },
-        {
-            "count_act": 4,
-            "process_state": "4",
-            "value_total": 13550000.0
-        }
+      dataStateForActivity : [
+        ["Actividad", "Cantidad de oportunidades"]
       ],
-
-      dataProgramValue : [
-        {
-            "description_program": "Ingenieria en sistemas",
-            "id_program": 1,
-            "count_program": 2,
-            "value_total": 8000000.0
-        },
-        {
-            "description_program": "Derecho",
-            "id_program": 4,
-            "count_program": 1,
-            "value_total": 5000000.0
-        }
-      ],
-  
       listStateGlobal : [],
-    
+      
 
   }),
   name : 'home',
@@ -209,20 +166,52 @@ export default {
     ColumnReports,
     Navbar,
   },
-  mounted() {
+  async mounted() {
     this.listStateGlobal = this.$store.state.process.listState;
+    //get data reports
+    let dataStateProcess = await this.getReportProcess('stateProcess', 'process');
+    this.dataProcessCount = dataStateProcess.data.data;
+
+    let dataStateProcessValue = await this.getReportProcess('stateProcessValue', 'process');
+    this.dataValuesProcess = dataStateProcessValue.data.data;
+    
+    let dataStateProgram = await this.getReportProcess('stateProgram', 'program');
+    this.dataProgramValue = dataStateProgram.data.data;
+
+    let dataStateCountLocal = await this.getReportProcess('stateCountProcess', 'process');
+    this.dataStateCountProcess = this.dataStateCountProcess.concat( dataStateCountLocal.data.data.map( item => [ item.period, item.count_opportunity ] ) );
+
+    let dataStateForAct = await this.getReportProcess('stateForActivity', 'process');
+    this.dataStateForActivity = this.dataStateForActivity.concat( dataStateForAct.data.data.map( item => [ item.description, item.count_act ] ) );
+
   },
   computed :{
     theme(){
       return 'light'
     }
-  }
+  },
+  methods: {
+      convertCurrency( value ) {
+        var formatter = new Intl.NumberFormat('es-CO', {
+          style: 'currency',
+          currency: 'COP',
+        });
+
+        return formatter.format(value);
+      },
+    },
+  mixins: [apiMixins, processData]
+
 }
 </script>
 
 <style scoped>
   .rounded{
       border-radius:30px;
+  }
+
+  .container-process-card{
+    background-color: var(--v-headerTable-base);
   }
 
 
